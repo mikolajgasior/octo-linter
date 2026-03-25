@@ -5,7 +5,7 @@ jobs:
     steps:
       - uses: ./.github/actions/non-existing
       - uses: ./.github/actions/non-existing2
-      - uses: keenbytes/non-existing-external@v2
+      - uses: mikolajgasior/non-existing-external@v2
       - uses: actions/checkout@nonexisting
       - uses: ./.github/actions/valid-action
       - uses: ./.github/actions/valid-action

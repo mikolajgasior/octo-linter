@@ -13,8 +13,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/keenbytes/octo-linter/v2/pkg/action"
-	"github.com/keenbytes/octo-linter/v2/pkg/workflow"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/action"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/workflow"
 )
 
 // DotGithub represents contents of .github directory.

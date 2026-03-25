@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/keenbytes/octo-linter/v2/internal/linter/glitch"
-	"github.com/keenbytes/octo-linter/v2/internal/linter/rule"
-	"github.com/keenbytes/octo-linter/v2/pkg/action"
-	"github.com/keenbytes/octo-linter/v2/pkg/dotgithub"
+	"github.com/mikolajgasior/octo-linter/v2/internal/linter/glitch"
+	"github.com/mikolajgasior/octo-linter/v2/internal/linter/rule"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/action"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/dotgithub"
 )
 
 // ActionReferencedStepOutputExists checks whether references to step outputs correspond to outputs defined in

@@ -1,7 +1,7 @@
 package workflow
 
 import (
-	"github.com/keenbytes/octo-linter/v2/pkg/step"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/step"
 )
 
 // Job represents a job in a GitHub Actions workflow parsed from YAML.

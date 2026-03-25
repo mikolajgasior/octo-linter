@@ -1,5 +1,5 @@
 site_name: octo-linter
-site_url: https://github.com/keenbytes/octo-linter
+site_url: https://github.com/mikolajgasior/octo-linter
 theme:
   icon:
     repo: fontawesome/brands/github
@@ -32,6 +32,6 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/keenbytes/octo-linter
+      link: https://github.com/mikolajgasior/octo-linter
 
-copyright: Copyright &copy; 2024-2025 Mikołaj Gąsior
+copyright: Copyright &copy; 2024-2026 Mikołaj Gąsior

@@ -1,6 +1,6 @@
 # octo-linter
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/keenbytes/octo-linter)](https://goreportcard.com/report/github.com/keenbytes/octo-linter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mikolajgasior/octo-linter)](https://goreportcard.com/report/github.com/mikolajgasior/octo-linter)
 
 ![octo-linter](octo-linter.png "octo-linter")
 
@@ -14,7 +14,7 @@ and log level command line argument has been introduced.  Also, each rule's sour
 to a separate file for better maintenance.
 
 ## Full documentation
-[Link to docs](https://keenbytes.github.io/octo-linter/)
+[Link to docs](https://mikolajgasior.github.io/octo-linter/)
 
 ## Running
 Check below help message for `lint` command:
@@ -57,7 +57,7 @@ Note that the image has to be present, either built or pulled from the registry.
 Replace path to the .github directory.
 
 ````
-git clone https://github.com/keenbytes/octo-linter.git
+git clone https://github.com/mikolajgasior/octo-linter.git
 cd octo-linter/example
 
 mkdir output
@@ -66,7 +66,7 @@ docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
   -v $(pwd)/output:/output \
-  keenbytes/octo-linter:v2.2.0 \
+  mikolajgasior/octo-linter:v2.2.1 \
   lint -p /dot-github -l WARN -c /config/config.yml -o /output -u 10
 ````
 

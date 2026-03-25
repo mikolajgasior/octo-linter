@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/keenbytes/octo-linter/v2/internal/linter/ruletest"
-	"github.com/keenbytes/octo-linter/v2/pkg/dotgithub"
+	"github.com/mikolajgasior/octo-linter/v2/internal/linter/ruletest"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/dotgithub"
 )
 
 func TestNotInDoubleQuotesValidate(t *testing.T) {

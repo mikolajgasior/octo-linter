@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/keenbytes/octo-linter/v2/internal/linter/rule"
+	"github.com/mikolajgasior/octo-linter/v2/internal/linter/rule"
 	"gopkg.in/yaml.v2"
 )
 

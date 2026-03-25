@@ -1,11 +1,11 @@
 package refvars
 
 import (
-	"github.com/keenbytes/octo-linter/v2/internal/linter/glitch"
-	"github.com/keenbytes/octo-linter/v2/internal/linter/rule"
-	"github.com/keenbytes/octo-linter/v2/pkg/action"
-	"github.com/keenbytes/octo-linter/v2/pkg/dotgithub"
-	"github.com/keenbytes/octo-linter/v2/pkg/workflow"
+	"github.com/mikolajgasior/octo-linter/v2/internal/linter/glitch"
+	"github.com/mikolajgasior/octo-linter/v2/internal/linter/rule"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/action"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/dotgithub"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/workflow"
 )
 
 // NotOneWord checks for variable references that are single-word or single-level, e.g. `${{ something }}` instead of

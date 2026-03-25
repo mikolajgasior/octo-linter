@@ -14,8 +14,8 @@ linters:
         main:
           allow:
             - $gostd
-            - github.com/keenbytes/octo-linter
-            - github.com/keenbytes/broccli/v3
+            - github.com/mikolajgasior/octo-linter
+            - github.com/mikolajgasior/broccli/v3
             - gopkg.in/yaml.v2
   exclusions:
     generated: disable

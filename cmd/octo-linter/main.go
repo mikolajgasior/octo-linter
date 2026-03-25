@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/keenbytes/broccli/v3"
-	"github.com/keenbytes/octo-linter/v2/internal/linter"
-	"github.com/keenbytes/octo-linter/v2/pkg/dotgithub"
-	"github.com/keenbytes/octo-linter/v2/pkg/loglevel"
+	"github.com/mikolajgasior/octo-linter/v2/internal/linter"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/dotgithub"
+	"github.com/mikolajgasior/octo-linter/v2/pkg/loglevel"
+	"github.com/mikolajgasior/broccli/v3"
 )
 
 //go:generate go run ../../gen.go ../../

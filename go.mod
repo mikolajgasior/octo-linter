@@ -1,8 +1,8 @@
-module github.com/keenbytes/octo-linter/v2
+module github.com/mikolajgasior/octo-linter/v2
 
-go 1.24.0
+go 1.24.5
 
 require (
-	github.com/keenbytes/broccli/v3 v3.0.2
+	github.com/mikolajgasior/broccli/v3 v3.2.4
 	gopkg.in/yaml.v2 v2.4.0
 )

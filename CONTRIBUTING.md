@@ -19,7 +19,7 @@ To get your development environment ready:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/keenbytes/octo-linter.git
+   git clone https://github.com/mikolajgasior/octo-linter.git
    cd octo-linter
    ```
 
