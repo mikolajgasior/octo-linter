@@ -8,12 +8,12 @@ repository. Use below commands to see octo-linter in action:
 git clone https://github.com/mikolajgasior/octo-linter.git
 cd octo-linter/example
 
-docker build -t octo-linter:v2.2.1 .
+docker build -t octo-linter .
 
 docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
-  octo-linter:v2.2.1 \
+  octo-linter \
   lint -p /dot-github -l WARN -c /config/config.yml
 ````
 
@@ -63,7 +63,7 @@ docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
   -v $(pwd)/output:/output \
-  octo-linter:v2.2.1 \
+  octo-linter \
   lint -p /dot-github -l WARN -c /config/config.yml -o /output -u 5
 ````
 
@@ -84,7 +84,7 @@ or `var` that is not on the list, tool will output info about it.  See below run
 docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
-  octo-linter:v2.2.0 \
+  octo-linter \
   lint -p /dot-github -l WARN -c /config/config.yml \
   -s /config/secrets_list.txt \
   -z /config/vars_list.txt \

@@ -53,8 +53,8 @@ If config is not passed, then the default one is used.  It can be found in
 **Use `init` command to create a default `dotgithub.yml` configuration file in current directory.**
 
 ### Using docker image
-Note that the image has to be present, either built or pulled from the registry.
-Replace path to the .github directory.
+Note that the image has to be present.
+Replace the path to the `.github` directory.
 
 ````
 git clone https://github.com/mikolajgasior/octo-linter.git
@@ -66,13 +66,13 @@ docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
   -v $(pwd)/output:/output \
-  mikolajgasior/octo-linter:v2.2.1 \
+  octo-linter \
   lint -p /dot-github -l WARN -c /config/config.yml -o /output -u 10
 ````
 
 
 ## Exit code
 Tool exits with exit code `0` when everything is fine.  `1` when there are errors, `2` when there are only
-warnings.  Additionally it may exit with a different code, eg. `22`.  These numbers indicate another error
+warnings.  Additionally, it may exit with a different code, e.g. `22`.  These numbers indicate another error
 whilst reading files.
 
