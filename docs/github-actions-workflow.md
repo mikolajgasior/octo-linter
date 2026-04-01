@@ -27,5 +27,5 @@ jobs:
           docker run --rm --name octo-linter \
             -v $(pwd)/.github:/dot-github \
             YOUR_REGISTRY/octo-linter \
-            lint -p /dot-github -l WARN
+            lint -p /dot-github -l WARN -m
 ````

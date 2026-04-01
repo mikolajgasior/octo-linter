@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/mikolajgasior/broccli/v3"
 	"github.com/mikolajgasior/octo-linter/v2/internal/linter"
 	"github.com/mikolajgasior/octo-linter/v2/pkg/dotgithub"
 	"github.com/mikolajgasior/octo-linter/v2/pkg/loglevel"
-	"github.com/mikolajgasior/broccli/v3"
 )
 
 //go:generate go run ../../gen.go ../../
@@ -122,6 +122,7 @@ func createLintCommand(cli *broccli.Broccli) {
 		broccli.IsRegularFile|broccli.IsExistent,
 	)
 	cmdLint.Flag("loglevel", "l", "", "One of INFO,ERR,WARN,DEBUG", broccli.TypeString, 0)
+	cmdLint.Flag("logmultiline", "m", "", "Each log entry key in a separate line", broccli.TypeBool, 0)
 	cmdLint.Flag(
 		"vars-file",
 		"z",
@@ -222,7 +223,7 @@ func initHandler(_ context.Context, cli *broccli.Broccli) int {
 }
 
 func lintHandler(ctx context.Context, cli *broccli.Broccli) int {
-	setLogger(cli.Flag("loglevel"))
+	setLogger(cli.Flag("loglevel"), cli.Flag("logmultiline") == "true")
 
 	lint, err := getLinter(cli.Flag("config"), cli.Flag("path"))
 	if err != nil && errors.Is(err, errCfgFileGet) {
@@ -406,12 +407,25 @@ func getDotGithub(
 	return &dotGithub, nil
 }
 
-func setLogger(loglevelFlag string) {
+func setLogger(loglevelFlag string, multiline bool) {
 	logLevel := loglevel.GetLogLevelFromString(loglevelFlag)
 
 	opts := &slog.HandlerOptions{
 		Level: logLevel,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				return slog.Attr{}
+			}
+			return a
+		},
 	}
-	logger := slog.New(slog.NewTextHandler(os.Stderr, opts))
+
+	var logger *slog.Logger
+	if multiline {
+		logger = slog.New(&customHandler{opts: opts})
+	} else {
+		logger = slog.New(slog.NewTextHandler(os.Stderr, opts))
+	}
+
 	slog.SetDefault(logger)
 }

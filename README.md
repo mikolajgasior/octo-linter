@@ -23,16 +23,17 @@ Check below help message for `lint` command:
     
     Runs the linter on files from a specific directory
     
-    Required flags: 
-      -p,	 --path DIR       Path to .github directory
-    
-    Optional flags: 
-      -c,	 --config FILE.       Linter config with rules in YAML format
-      -l,	 --loglevel           One of NONE,ERR,WARN,DEBUG
-      -o,	 --output DIR         Path to where summary markdown gets generated
-      -u,	 --output-errors INT  Limit numbers of errors shown in the markdown output file
-      -s,	 --secrets-file       Check if secret names exist in this file (one per line)
-      -z,	 --vars-file          Check if variable names exist in this file (one per line)
+    Required flags:
+    -p,		 --path DIR 		Path to .github directory
+
+    Optional flags:
+    -c,		 --config FILE 			Linter config with rules in YAML format
+    -l,		 --loglevel  			One of INFO,ERR,WARN,DEBUG
+    -m,		 --logmultiline  		Each log entry key in a separate line
+    -o,		 --output DIR 			Path to where summary markdown gets generated
+    -u,		 --output-errors INT 		Limit numbers of errors shown in the markdown output file
+    -s,		 --secrets-file  		Check if secret names exist in this file (one per line)
+    -z,		 --vars-file  			Check if variable names exist in this file (one per line)
 
 Use `-p` argument to point to `.github` directories.  The tool will search for any actions in the `actions`
 directory, where each action is in its own sub-directory and its filename is either `action.yaml` or
@@ -58,10 +59,10 @@ Replace the path to the `.github` directory.
 
 ````
 git clone https://github.com/mikolajgasior/octo-linter.git
-cd octo-linter/example
 
 mkdir output
 
+cd octo-linter/example
 docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
