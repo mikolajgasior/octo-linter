@@ -26,6 +26,6 @@ jobs:
           # is present in .github directory
           docker run --rm --name octo-linter \
             -v $(pwd)/.github:/dot-github \
-            YOUR_REGISTRY/octo-linter \
+            mikolajgasior/octo-linter:v2.3.0 \
             lint -p /dot-github -l WARN -m
 ````

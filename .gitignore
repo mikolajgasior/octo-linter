@@ -32,3 +32,5 @@ go.work.sum
 generated_*
 # Added by goreleaser init:
 dist/
+
+.idea

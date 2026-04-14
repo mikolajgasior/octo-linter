@@ -7,13 +7,11 @@ repository. Use below commands to see octo-linter in action:
 ````
 git clone https://github.com/mikolajgasior/octo-linter.git
 
-docker build -t octo-linter .
-
 cd octo-linter/example
 docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
-  octo-linter \
+  mikolajgasior/octo-linter:v2.3.0 \
   lint -p /dot-github -l WARN -c /config/config.yml
 ````
 
@@ -70,7 +68,7 @@ docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
   -v $(pwd)/output:/output \
-  octo-linter \
+  mikolajgasior/octo-linter:v2.3.0 \
   lint -p /dot-github -l WARN -c /config/config.yml -o /output -u 5
 ````
 
@@ -91,7 +89,7 @@ or `var` that is not on the list, tool will output info about it.  See below run
 docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
-  octo-linter \
+  mikolajgasior/octo-linter:v2.3.0 \
   lint -p /dot-github -l WARN -c /config/config.yml \
   -s /config/secrets_list.txt \
   -z /config/vars_list.txt \
