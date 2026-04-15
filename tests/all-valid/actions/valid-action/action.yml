@@ -33,6 +33,7 @@ runs:
         fi
 
         echo "output-1=aaa" >> $GITHUB_OUTPUT
+        echo "output-2=$ANOTHER_VAL" >> "$GITHUB_OUTPUT"
 
     - uses: actions/checkout@v4
       id: step-3
@@ -41,6 +42,7 @@ runs:
       shell: bash
       run: |
         echo '${{ steps.step-1.outputs.output-1 }}'
+        echo '${{ steps.step-1.outputs.output-2 }}'
         echo '${{ steps.step-3.outputs.ref }}'
     
     - name: Call to existing input

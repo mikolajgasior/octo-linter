@@ -63,7 +63,7 @@ func (r ActionReferencedStepOutputExists) Lint(
 		`\${{[ ]*steps\.([a-zA-Z0-9\-_]+)\.outputs\.([a-zA-Z0-9\-_]+)[ ]*}}`,
 	)
 	reAppendToGithubOutput := regexp.MustCompile(
-		`echo[ ]+["']([a-zA-Z0-9\-_]+)=.*["'][ ]+.*>>[ ]+\$GITHUB_OUTPUT`,
+		`echo[ ]+["']([a-zA-Z0-9\-_]+)=.*["'][ ]+.*>>[ ]+["]{0,1}\$GITHUB_OUTPUT["]{0,1}`,
 	)
 	reLocal := regexp.MustCompile(
 		`^\.\/\.github\/actions\/([a-z0-9\-]+|[a-z0-9\-]+\/[a-z0-9\-]+)$`,
