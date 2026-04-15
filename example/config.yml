@@ -34,3 +34,7 @@ rules:
 
   workflow_runners:
     not_latest: true # The use of the latest runner version should be avoided
+
+overrides:
+  external_actions_paths:
+    mikolajgasior/read-from-local-path: ./overrides/mikolajgasior/read-from-local-path
