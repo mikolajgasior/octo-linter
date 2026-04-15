@@ -20,8 +20,8 @@ rules:
   referenced_variables_in_actions:
     not_in_double_quotes: true # Named-value variables should not be enclosed in double quotes
 
-  used_actions_in_action_steps: # Only local actions should be used
-    source: local-only
+  used_actions_in_action_steps:
+    source: local-or-external
   
   used_actions_in_workflow_job_steps:
     source: local-only
@@ -37,4 +37,4 @@ rules:
 
 overrides:
   external_actions_paths:
-    mikolajgasior/read-from-local-path: ./overrides/local-source
+    mikolajgasior/read-from-local-path@v1: ./overrides/local-source

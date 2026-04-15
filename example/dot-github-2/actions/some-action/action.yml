@@ -1,0 +1,46 @@
+---
+name: Action with valid name
+description: Some description
+inputs:
+  some-input1:
+    description: Some input
+    required: true
+  output-without-description:
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Step where non-existing input is called and not in double quote
+      shell: bash
+      run: |
+        echo "${{ inputs.non-existing }}"
+
+    - name: Step where existing input is called
+      shell: bash
+      env:
+        InvalidEnvName: abc123
+      run: |
+        echo '${{ inputs.some-input1 }}'
+
+    - name: Step that sets output
+      shell: bash
+      id: existing-step
+      run: |
+        echo "output1=abc123" >> $GITHUB_OUTPUT
+
+    - name: Use of non-existing step
+      shell: bash
+      run: |
+        echo '${{ steps.non-existing-step.outputs.output1 }}'
+
+    - name: Use of existing step
+      shell: bash
+      run: |
+        echo '${{ steps.existing-step.outputs.output1 }}'
+
+    - name: Calling external action overridden from local source
+      uses: mikolajgasior/read-from-local-path@v1

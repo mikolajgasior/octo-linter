@@ -30,7 +30,7 @@ func GetDotGithub() *dotgithub.DotGithub {
 		logger := slog.New(slog.DiscardHandler)
 		slog.SetDefault(logger)
 
-		_ = testDotGithub.ReadDir(context.Background(), "../../../../tests/rules")
+		_ = testDotGithub.ReadDir(context.Background(), "../../../../tests/rules", map[string]string{})
 	})
 
 	return testDotGithub
