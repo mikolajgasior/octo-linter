@@ -51,21 +51,21 @@ type Rule interface {
 * `FileType`: Returns an integer bitmask indicating which file types this rule applies to.
 
 #### FileType method
-If the rule applies only to action files:
+If the rule is used only on the action files:
 ```go
 func (r ActionReferencedStepOutputExists) FileType() int {
 	return rule.DotGithubFileTypeAction
 }
 ```
 
-If the rule applies to both action and workflow files:
+If the rule is used on both action and workflow files:
 ```go
 func (r ActionReferencedStepOutputExists) FileType() int {
 	return rule.DotGithubFileTypeAction | rule.DotGithubFileTypeWorkflow
 }
 ```
 
-To prevent the rule from running twice, it should have a unique field like `FileTypeRequired` which indicates whether the rule will be used for action or workflow.
+To prevent the rule from running twice, or running rule configured for workflow on the action file, additional field (like `FileTypeRequired`) is used. It indicates whether the rule instance has been created for action or workflow.
 ```go
 type NotInDoubleQuotes struct {
 	FileTypeRequired string
@@ -89,7 +89,6 @@ func (r NotInDoubleQuotes) Lint(conf interface{}, file dotgithub.File, _ *dotgit
     }
     // ...
 }
-
 ```
 
 #### ConfigName method
