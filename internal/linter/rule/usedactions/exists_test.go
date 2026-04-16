@@ -35,89 +35,110 @@ func TestExistsValidate(t *testing.T) {
 func TestLocal(t *testing.T) {
 	t.Parallel()
 
-	rule := Exists{}
-	conf := []interface{}{"local"}
-	d := ruletest.GetDotGithub()
+	for _, fileTypeRequired := range []string{"action", "workflow"} {
+		rule := Exists{
+			FileTypeRequired: fileTypeRequired,
+		}
+		conf := []interface{}{"local"}
+		d := ruletest.GetDotGithub()
 
-	fn := func(f dotgithub.File, n string) {
-		compliant, ruleErrors, err := ruletest.Lint(3, rule, conf, f, d)
-		if compliant {
-			t.Errorf("Exists.Lint on %s should return false when conf is %v", n, conf)
+		fn := func(f dotgithub.File, n string) {
+			compliant, ruleErrors, err := ruletest.Lint(3, rule, conf, f, d)
+			if compliant {
+				t.Errorf("Exists.Lint on %s should return false when conf is %v", n, conf)
+			}
+
+			if err != nil {
+				t.Errorf("Exists.Lint on %s failed with an error: %s", n, err.Error())
+			}
+
+			if len(ruleErrors) != 2 {
+				t.Errorf(
+					"Exists.Lint on %s should send 2 errors over the channel not [%s]",
+					n,
+					strings.Join(ruleErrors, "\n"),
+				)
+			}
 		}
 
-		if err != nil {
-			t.Errorf("Exists.Lint on %s failed with an error: %s", n, err.Error())
-		}
-
-		if len(ruleErrors) != 2 {
-			t.Errorf(
-				"Exists.Lint on %s should send 2 errors over the channel not [%s]",
-				n,
-				strings.Join(ruleErrors, "\n"),
-			)
+		if fileTypeRequired == "action" {
+			ruletest.Action(d, "usedactions-exists", fn)
+		} else {
+			ruletest.Workflow(d, "usedactions-exists.yml", fn)
 		}
 	}
-
-	ruletest.Action(d, "usedactions-exists", fn)
-	ruletest.Workflow(d, "usedactions-exists.yml", fn)
 }
 
 func TestExternal(t *testing.T) {
 	t.Parallel()
 
-	rule := Exists{}
-	conf := []interface{}{"external"}
-	d := ruletest.GetDotGithub()
+	for _, fileTypeRequired := range []string{"action", "workflow"} {
+		rule := Exists{
+			FileTypeRequired: fileTypeRequired,
+		}
+		conf := []interface{}{"external"}
+		d := ruletest.GetDotGithub()
 
-	fn := func(f dotgithub.File, n string) {
-		compliant, ruleErrors, err := ruletest.Lint(3, rule, conf, f, d)
-		if compliant {
-			t.Errorf("Exists.Lint on %s should return false when conf is %v", n, conf)
+		fn := func(f dotgithub.File, n string) {
+			compliant, ruleErrors, err := ruletest.Lint(3, rule, conf, f, d)
+			if compliant {
+				t.Errorf("Exists.Lint on %s should return false when conf is %v", n, conf)
+			}
+
+			if err != nil {
+				t.Errorf("Exists.Lint on %s failed with an error: %s", n, err.Error())
+			}
+
+			if len(ruleErrors) != 2 {
+				t.Errorf(
+					"Exists.Lint on %s should send 2 errors over the channel not [%s]",
+					n,
+					strings.Join(ruleErrors, "\n"),
+				)
+			}
 		}
 
-		if err != nil {
-			t.Errorf("Exists.Lint on %s failed with an error: %s", n, err.Error())
-		}
-
-		if len(ruleErrors) != 2 {
-			t.Errorf(
-				"Exists.Lint on %s should send 2 errors over the channel not [%s]",
-				n,
-				strings.Join(ruleErrors, "\n"),
-			)
+		if fileTypeRequired == "action" {
+			ruletest.Action(d, "usedactions-exists", fn)
+		} else {
+			ruletest.Workflow(d, "usedactions-exists.yml", fn)
 		}
 	}
-
-	ruletest.Action(d, "usedactions-exists", fn)
-	ruletest.Workflow(d, "usedactions-exists.yml", fn)
 }
 
 func TestLocalExternal(t *testing.T) {
 	t.Parallel()
 
-	rule := Exists{}
-	conf := []interface{}{"local", "external"}
-	d := ruletest.GetDotGithub()
+	for _, fileTypeRequired := range []string{"action", "workflow"} {
+		rule := Exists{
+			FileTypeRequired: fileTypeRequired,
+		}
+		conf := []interface{}{"local", "external"}
+		d := ruletest.GetDotGithub()
 
-	fn := func(f dotgithub.File, n string) {
-		compliant, ruleErrors, err := ruletest.Lint(3, rule, conf, f, d)
-		if compliant {
-			t.Errorf("Exists.Lint on %s should return false when conf is %v", n, conf)
+		fn := func(f dotgithub.File, n string) {
+			compliant, ruleErrors, err := ruletest.Lint(3, rule, conf, f, d)
+			if compliant {
+				t.Errorf("Exists.Lint on %s should return false when conf is %v", n, conf)
+			}
+
+			if err != nil {
+				t.Errorf("Exists.Lint on %s failed with an error: %s", n, err.Error())
+			}
+
+			if len(ruleErrors) != 4 {
+				t.Errorf(
+					"Exists.Lint on %s should send 4 errors over the channel not [%s]",
+					n,
+					strings.Join(ruleErrors, "\n"),
+				)
+			}
 		}
 
-		if err != nil {
-			t.Errorf("Exists.Lint on %s failed with an error: %s", n, err.Error())
-		}
-
-		if len(ruleErrors) != 4 {
-			t.Errorf(
-				"Exists.Lint on %s should send 4 errors over the channel not [%s]",
-				n,
-				strings.Join(ruleErrors, "\n"),
-			)
+		if fileTypeRequired == "action" {
+			ruletest.Action(d, "usedactions-exists", fn)
+		} else {
+			ruletest.Workflow(d, "usedactions-exists.yml", fn)
 		}
 	}
-
-	ruletest.Action(d, "usedactions-exists", fn)
-	ruletest.Workflow(d, "usedactions-exists.yml", fn)
 }

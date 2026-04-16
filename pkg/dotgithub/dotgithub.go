@@ -53,11 +53,11 @@ func errDoingHTTPRequestForAction(err error) error {
 }
 
 // ReadDir scans the given directory and parses all GitHub Actions workflow and action YAML files into the struct.
-func (d *DotGithub) ReadDir(ctx context.Context, path string) error {
+func (d *DotGithub) ReadDir(ctx context.Context, path string, overridePaths map[string]string) error {
 	d.Actions = make(map[string]*action.Action)
 	d.Workflows = make(map[string]*workflow.Workflow)
 
-	err := d.getActionsFromDir(path)
+	err := d.getActionsFromDir(path, overridePaths)
 	if err != nil {
 		return fmt.Errorf("error getting actions from dir %s: %w", path, err)
 	}
@@ -142,7 +142,6 @@ func (d *DotGithub) GetExternalAction(name string) *action.Action {
 	if d.ExternalActions == nil {
 		d.ExternalActions = map[string]*action.Action{}
 	}
-
 	return d.ExternalActions[name]
 }
 
@@ -217,7 +216,7 @@ func (d *DotGithub) IsSecretExist(name string) bool {
 	return ok
 }
 
-func (d *DotGithub) getActionsFromDir(path string) error {
+func (d *DotGithub) getActionsFromDir(path string, overridePaths map[string]string) error {
 	dirActions := filepath.Join(path, "actions")
 
 	entries, err := os.ReadDir(dirActions)
@@ -230,44 +229,42 @@ func (d *DotGithub) getActionsFromDir(path string) error {
 	for _, entry := range entries {
 		dirAction := filepath.Join(dirActions, entry.Name())
 
-		// only directories
-		fileInfo, err := os.Stat(dirAction)
+		ymlAction, err := getActionYAMLFromPath(dirAction)
 		if err != nil {
-			return fmt.Errorf("error getting os.Stat on %s: %w", dirAction, err)
+			return err
 		}
 
-		if !fileInfo.IsDir() {
+		if ymlAction == "" {
 			continue
-		}
-
-		// search for action.yml or action.yaml file
-		ymlAction := filepath.Join(dirAction, "action.yml")
-		_, err = os.Stat(ymlAction)
-
-		ymlNotFound := os.IsNotExist(err)
-		if err != nil && !ymlNotFound {
-			return fmt.Errorf("error getting os.Stat on %s: %w", ymlAction, err)
-		}
-
-		if ymlNotFound {
-			yamlAction := filepath.Join(dirAction, "action.yaml")
-			_, err = os.Stat(yamlAction)
-
-			yamlNotFound := os.IsNotExist(err)
-			if err != nil && !yamlNotFound {
-				return fmt.Errorf("error getting os.Stat on %s: %w", yamlAction, err)
-			}
-
-			if !yamlNotFound {
-				ymlAction = yamlAction
-			} else {
-				continue
-			}
 		}
 
 		d.Actions[entry.Name()] = &action.Action{
 			Path:    ymlAction,
 			DirName: entry.Name(),
+		}
+	}
+
+	if len(overridePaths) == 0 {
+		return nil
+	}
+
+	if d.ExternalActions == nil {
+		d.ExternalActions = map[string]*action.Action{}
+	}
+
+	for actionPath, localPath := range overridePaths {
+		ymlAction, err := getActionYAMLFromPath(localPath)
+		if err != nil {
+			return err
+		}
+
+		if ymlAction == "" {
+			continue
+		}
+
+		d.ExternalActions[actionPath] = &action.Action{
+			Path:    ymlAction,
+			DirName: "",
 		}
 	}
 
@@ -309,6 +306,15 @@ func (d *DotGithub) getWorkflowsFromDir(path string) error {
 }
 
 func (d *DotGithub) processActions(ctx context.Context) error {
+	// get contents from already existing external actions that are overridden by local actions
+	var err error
+	for path, _ := range d.ExternalActions {
+		err = d.ExternalActions[path].Unmarshal(false)
+		if err != nil {
+			return fmt.Errorf("error unmarshaling external action overridden by a local file %s: %w", path, err)
+		}
+	}
+
 	// download all external actions used in actions' steps
 	reExternal := regexp.MustCompile(regexpExternalAction)
 
@@ -439,4 +445,43 @@ func (d *DotGithub) getActionHTTPResponse(
 	}
 
 	return resp, nil
+}
+
+func getActionYAMLFromPath(path string) (string, error) {
+	// only directories
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return "", fmt.Errorf("error getting os.Stat on %s: %w", path, err)
+	}
+
+	if !fileInfo.IsDir() {
+		return "", nil
+	}
+
+	// search for action.yml or action.yaml file
+	ymlAction := filepath.Join(path, "action.yml")
+	_, err = os.Stat(ymlAction)
+
+	ymlNotFound := os.IsNotExist(err)
+	if err != nil && !ymlNotFound {
+		return "", fmt.Errorf("error getting os.Stat on %s: %w", ymlAction, err)
+	}
+
+	if !ymlNotFound {
+		return ymlAction, nil
+	}
+
+	yamlAction := filepath.Join(path, "action.yaml")
+	_, err = os.Stat(yamlAction)
+
+	yamlNotFound := os.IsNotExist(err)
+	if err != nil && !yamlNotFound {
+		return "", fmt.Errorf("error getting os.Stat on %s: %w", yamlAction, err)
+	}
+
+	if !yamlNotFound {
+		return yamlAction, nil
+	}
+
+	return "", nil
 }

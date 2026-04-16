@@ -13,7 +13,9 @@ import (
 
 // Source checks if referenced action (in `uses`) in steps has valid path.
 // This rule can be configured to allow local actions, external actions, or both.
-type Source struct{}
+type Source struct {
+	FileTypeRequired string
+}
 
 // ConfigName returns the name of the rule as defined in the configuration file.
 func (r Source) ConfigName(t int) string {
@@ -60,8 +62,15 @@ func (r Source) Lint(
 		return false, errValueNotString
 	}
 
-	if file.GetType() != rule.DotGithubFileTypeAction &&
-		file.GetType() != rule.DotGithubFileTypeWorkflow {
+	var fileTypeRequired int
+	if r.FileTypeRequired == "action" {
+		fileTypeRequired = rule.DotGithubFileTypeAction
+	}
+	if r.FileTypeRequired == "workflow" {
+		fileTypeRequired = rule.DotGithubFileTypeWorkflow
+	}
+
+	if file.GetType() != fileTypeRequired {
 		return true, nil
 	}
 

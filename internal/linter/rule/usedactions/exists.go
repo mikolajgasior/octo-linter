@@ -14,7 +14,9 @@ import (
 )
 
 // Exists verifies that the action referenced in a step actually exists.
-type Exists struct{}
+type Exists struct {
+	FileTypeRequired string
+}
 
 var errConfValue = errors.New("config value is invalid")
 
@@ -68,8 +70,15 @@ func (r Exists) Lint(
 	dotGithub *dotgithub.DotGithub,
 	chErrors chan<- glitch.Glitch,
 ) (bool, error) {
-	if file.GetType() != rule.DotGithubFileTypeAction &&
-		file.GetType() != rule.DotGithubFileTypeWorkflow {
+	var fileTypeRequired int
+	if r.FileTypeRequired == "action" {
+		fileTypeRequired = rule.DotGithubFileTypeAction
+	}
+	if r.FileTypeRequired == "workflow" {
+		fileTypeRequired = rule.DotGithubFileTypeWorkflow
+	}
+
+	if file.GetType() != fileTypeRequired {
 		return true, nil
 	}
 

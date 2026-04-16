@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/mikolajgasior/octo-linter/v2/internal/linter/rule"
 	"gopkg.in/yaml.v2"
@@ -21,6 +22,7 @@ type Config struct {
 	Rules       []rule.Rule                       `yaml:"-"`
 	Values      []interface{}                     `yaml:"-"`
 	WarningOnly map[string]struct{}               `yaml:"-"`
+	Overrides   *Overrides                        `yaml:"overrides,omitempty"`
 }
 
 // GetDefaultConfig returns a default configuration file.
@@ -102,6 +104,23 @@ func (cfg *Config) readBytesAndValidate(b []byte) error {
 			err := cfg.addRuleFromConfig(fullRuleName, ruleConfig)
 			if err != nil {
 				return fmt.Errorf("rule %s has invalid config: %w", fullRuleName, err)
+			}
+		}
+	}
+
+	if cfg.Overrides == nil {
+		return nil
+	}
+
+	if len(cfg.Overrides.ExternalActionsOutputsConfig) > 0 {
+		cfg.Overrides.ExternalActionsOutputs = make(map[string][]*regexp.Regexp, len(cfg.Overrides.ExternalActionsOutputsConfig))
+		for actionPath, output := range cfg.Overrides.ExternalActionsOutputsConfig {
+			cfg.Overrides.ExternalActionsOutputs[actionPath] = make([]*regexp.Regexp, len(output))
+			for i, outputRegex := range output {
+				cfg.Overrides.ExternalActionsOutputs[actionPath][i], err = regexp.Compile(outputRegex)
+				if err != nil {
+					return fmt.Errorf("error compiling external action output regex %s: %w", outputRegex, err)
+				}
 			}
 		}
 	}

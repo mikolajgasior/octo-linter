@@ -1,0 +1,14 @@
+---
+name: Action with valid name
+description: Some description
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Calling external action overridden from local source
+      uses: mikolajgasior/read-from-local-path@v1
+      #with:
+      #  local-src-input-1: "abc123"

@@ -10,7 +10,9 @@ import (
 
 // NotInDoubleQuotes scans for all variable references enclosed in double quotes. It is safer to use single quotes, as
 // double quotes expand certain characters and may allow the execution of sub-commands.
-type NotInDoubleQuotes struct{}
+type NotInDoubleQuotes struct {
+	FileTypeRequired string
+}
 
 // ConfigName returns the name of the rule as defined in the configuration file.
 func (r NotInDoubleQuotes) ConfigName(t int) string {
@@ -52,8 +54,15 @@ func (r NotInDoubleQuotes) Lint(
 		return false, errValueNotBool
 	}
 
-	if file.GetType() != rule.DotGithubFileTypeAction &&
-		file.GetType() != rule.DotGithubFileTypeWorkflow {
+	var fileTypeRequired int
+	if r.FileTypeRequired == "action" {
+		fileTypeRequired = rule.DotGithubFileTypeAction
+	}
+	if r.FileTypeRequired == "workflow" {
+		fileTypeRequired = rule.DotGithubFileTypeWorkflow
+	}
+
+	if file.GetType() != fileTypeRequired {
 		return true, nil
 	}
 

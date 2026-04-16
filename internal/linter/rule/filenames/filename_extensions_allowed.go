@@ -11,7 +11,9 @@ import (
 )
 
 // FilenameExtensionsAllowed checks if file extension is one of the specific values, eg. 'yml' or 'yaml'.
-type FilenameExtensionsAllowed struct{}
+type FilenameExtensionsAllowed struct {
+	FileTypeRequired string
+}
 
 // ConfigName returns the name of the rule as defined in the configuration file.
 func (r FilenameExtensionsAllowed) ConfigName(t int) string {
@@ -59,8 +61,15 @@ func (r FilenameExtensionsAllowed) Lint(
 	_ *dotgithub.DotGithub,
 	chErrors chan<- glitch.Glitch,
 ) (bool, error) {
-	if file.GetType() != rule.DotGithubFileTypeAction &&
-		file.GetType() != rule.DotGithubFileTypeWorkflow {
+	var fileTypeRequired int
+	if r.FileTypeRequired == "action" {
+		fileTypeRequired = rule.DotGithubFileTypeAction
+	}
+	if r.FileTypeRequired == "workflow" {
+		fileTypeRequired = rule.DotGithubFileTypeWorkflow
+	}
+
+	if file.GetType() != fileTypeRequired {
 		return true, nil
 	}
 

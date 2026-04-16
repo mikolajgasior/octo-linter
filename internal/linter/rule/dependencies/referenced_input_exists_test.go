@@ -31,7 +31,9 @@ func TestReferencedInputExistsValidate(t *testing.T) {
 func TestReferencedInputExistsActionNotCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := ReferencedInputExists{}
+	rule := ReferencedInputExists{
+		FileTypeRequired: "action",
+	}
 	d := ruletest.GetDotGithub()
 	conf := true
 
@@ -62,7 +64,9 @@ func TestReferencedInputExistsActionNotCompliant(t *testing.T) {
 func TestReferencedInputExistsActionCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := ReferencedInputExists{}
+	rule := ReferencedInputExists{
+		FileTypeRequired: "action",
+	}
 	d := ruletest.GetDotGithub()
 	conf := true
 
@@ -93,7 +97,9 @@ func TestReferencedInputExistsActionCompliant(t *testing.T) {
 func TestReferencedInputExistsWorkflowNotCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := ReferencedInputExists{}
+	rule := ReferencedInputExists{
+		FileTypeRequired: "workflow",
+	}
 	d := ruletest.GetDotGithub()
 	conf := true
 
@@ -124,7 +130,9 @@ func TestReferencedInputExistsWorkflowNotCompliant(t *testing.T) {
 func TestReferencedInputExistsWorkflowCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := ReferencedInputExists{}
+	rule := ReferencedInputExists{
+		FileTypeRequired: "workflow",
+	}
 	d := ruletest.GetDotGithub()
 	conf := true
 

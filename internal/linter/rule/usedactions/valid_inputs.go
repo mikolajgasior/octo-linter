@@ -14,7 +14,9 @@ import (
 
 // ValidInputs verifies that all required inputs are provided when referencing an action in a step, and that no
 // undefined inputs are used.
-type ValidInputs struct{}
+type ValidInputs struct {
+	FileTypeRequired string
+}
 
 // ConfigName returns the name of the rule as defined in the configuration file.
 func (r ValidInputs) ConfigName(t int) string {
@@ -56,8 +58,15 @@ func (r ValidInputs) Lint(
 		return false, errValueNotBool
 	}
 
-	if file.GetType() != rule.DotGithubFileTypeAction &&
-		file.GetType() != rule.DotGithubFileTypeWorkflow {
+	var fileTypeRequired int
+	if r.FileTypeRequired == "action" {
+		fileTypeRequired = rule.DotGithubFileTypeAction
+	}
+	if r.FileTypeRequired == "workflow" {
+		fileTypeRequired = rule.DotGithubFileTypeWorkflow
+	}
+
+	if file.GetType() != fileTypeRequired {
 		return true, nil
 	}
 
@@ -199,7 +208,6 @@ func (r ValidInputs) processSteps(
 		if ok {
 			errPrefix = newErrPrefix
 		}
-
 		stepAction := r.getStepFromStepUses(step.Uses, dotGithub)
 		if stepAction == nil {
 			continue
@@ -242,10 +250,8 @@ func (r ValidInputs) getStepFromStepUses(
 	if stepUses == "" {
 		return nil
 	}
-
 	isLocal := regexpLocalAction.MatchString(stepUses)
-	isExternal := regexpLocalAction.MatchString(stepUses)
-
+	isExternal := regexpExternalAction.MatchString(stepUses)
 	if isLocal {
 		actionName := strings.ReplaceAll(stepUses, "./.github/actions/", "")
 

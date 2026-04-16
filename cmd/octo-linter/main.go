@@ -243,6 +243,7 @@ func lintHandler(ctx context.Context, cli *broccli.Broccli) int {
 		cli.Flag("path"),
 		cli.Flag("vars-file"),
 		cli.Flag("secrets-file"),
+		lint.Config.Overrides,
 	)
 	if err != nil && errors.Is(err, errDotGithubDirRead) {
 		return ExitErrReadingDotGithubDir
@@ -364,10 +365,19 @@ func getDotGithub(
 	dotGithubPath string,
 	varsFile string,
 	secretsFile string,
+	overrides *linter.Overrides,
 ) (*dotgithub.DotGithub, error) {
 	dotGithub := dotgithub.DotGithub{}
 
-	err := dotGithub.ReadDir(ctx, dotGithubPath)
+	overridePaths := map[string]string{}
+
+	if overrides != nil && len(overrides.ExternalActionsPaths) > 0 {
+		for action, path := range overrides.ExternalActionsPaths {
+			overridePaths[action] = path
+		}
+	}
+
+	err := dotGithub.ReadDir(ctx, dotGithubPath, overridePaths)
 	if err != nil {
 		slog.Error(
 			"error initializing",

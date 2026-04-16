@@ -65,6 +65,33 @@ func (r ActionReferencedStepOutputExists) FileType() int {
 }
 ```
 
+To prevent the rule from running twice, it should have a unique field like `FileTypeRequired` which indicates whether the rule will be used for action or workflow.
+```go
+type NotInDoubleQuotes struct {
+	FileTypeRequired string
+}
+```
+
+In addition, the `Lint` method must have a check for `FileTypeRequired` to ensure the rule is only run for the appropriate file type.
+```go
+func (r NotInDoubleQuotes) Lint(conf interface{}, file dotgithub.File, _ *dotgithub.DotGithub, chErrors chan<- glitch.Glitch) (bool, error) {
+    // ...
+    var fileTypeRequired int
+    if r.FileTypeRequired == "action" {
+        fileTypeRequired = rule.DotGithubFileTypeAction
+    }
+    if r.FileTypeRequired == "workflow" {
+        fileTypeRequired = rule.DotGithubFileTypeWorkflow
+    }
+
+    if file.GetType() != fileTypeRequired {
+        return true, nil
+    }
+    // ...
+}
+
+```
+
 #### ConfigName method
 This method can vary depending on whether the rule struct handles:
 

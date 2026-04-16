@@ -1,0 +1,22 @@
+---
+name: Action from local source
+description: Some description
+inputs:
+  local-src-input-1:
+    description: Some input
+    required: true
+outputs:
+  local-src-output-2:
+    description: Some output
+    value: "4"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Nothing important
+      shell: bash
+      run: |
+        echo "nothing important"

@@ -11,7 +11,9 @@ import (
 // NotOneWord checks for variable references that are single-word or single-level, e.g. `${{ something }}` instead of
 // `${{ inputs.something }}`.
 // Only the values `true` and `false` are permitted in this form; all other variables are considered invalid.
-type NotOneWord struct{}
+type NotOneWord struct {
+	FileTypeRequired string
+}
 
 // ConfigName returns the name of the rule as defined in the configuration file.
 func (r NotOneWord) ConfigName(t int) string {
@@ -53,11 +55,17 @@ func (r NotOneWord) Lint(
 		return false, errValueNotBool
 	}
 
-	if file.GetType() != rule.DotGithubFileTypeAction &&
-		file.GetType() != rule.DotGithubFileTypeWorkflow {
-		return true, nil
+	var fileTypeRequired int
+	if r.FileTypeRequired == "action" {
+		fileTypeRequired = rule.DotGithubFileTypeAction
+	}
+	if r.FileTypeRequired == "workflow" {
+		fileTypeRequired = rule.DotGithubFileTypeWorkflow
 	}
 
+	if file.GetType() != fileTypeRequired {
+		return true, nil
+	}
 	if !confValue {
 		return true, nil
 	}
