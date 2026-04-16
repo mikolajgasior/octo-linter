@@ -69,6 +69,16 @@ rules:
 ### Warning instead of an error
 A non-compliant rule can be treated either as an error or a warning. If a rule is intended to trigger only a warning, it should be included in the `warning_only` list, as shown on above example under the `filenames` rule group.
 
+### Override external action
+When a GitHub action that is private is used, octo-linter will not be able to download it. In such cases, it is possible to override the action with a local copy.
+To do so, add the action to the `overrides.external_actions_paths` list. See an example below.
+
+````yaml
+overrides:
+  external_actions_paths:
+    my-organisation/repo-name@v1: ../repo-name
+````
+
 ### Version compatibility
 The latest `v2` version of the application supports only configuration version `'3'`. Older configuration versions are no longer supported and would 
 require using the previous `v1` release of octo-linter.
