@@ -35,58 +35,73 @@ func TestFilenameExtensionsAllowedValidate(t *testing.T) {
 func TestFilenameExtensionsAllowedNotCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := FilenameExtensionsAllowed{}
-	conf := []interface{}{"yaml"}
-	d := ruletest.GetDotGithub()
+	for _, fileTypeRequired := range []string{"action", "workflow"} {
+		rule := FilenameExtensionsAllowed{
+			FileTypeRequired: fileTypeRequired,
+		}
+		conf := []interface{}{"yaml"}
+		d := ruletest.GetDotGithub()
 
-	fn := func(f dotgithub.File, _ string) {
-		compliant, ruleErrors, err := ruletest.Lint(2, rule, conf, f, d)
-		if compliant {
-			t.Errorf(
-				"FilenameExtensionsAllowed.Lint should return false when filename extension is not in config",
-			)
+		fn := func(f dotgithub.File, _ string) {
+			compliant, ruleErrors, err := ruletest.Lint(2, rule, conf, f, d)
+			if compliant {
+				t.Errorf(
+					"FilenameExtensionsAllowed.Lint should return false when filename extension is not in config",
+				)
+			}
+
+			if err != nil {
+				t.Errorf("FilenameExtensionsAllowed.Lint failed with an error: %s", err.Error())
+			}
+
+			if len(ruleErrors) == 0 {
+				t.Errorf("FilenameExtensionsAllowed.Lint should send an error over the channel")
+			}
 		}
 
-		if err != nil {
-			t.Errorf("FilenameExtensionsAllowed.Lint failed with an error: %s", err.Error())
-		}
-
-		if len(ruleErrors) == 0 {
-			t.Errorf("FilenameExtensionsAllowed.Lint should send an error over the channel")
+		if fileTypeRequired == "action" {
+			ruletest.Action(d, "valid-action", fn)
+		} else {
+			ruletest.Workflow(d, "valid-workflow.yml", fn)
 		}
 	}
 
-	ruletest.Action(d, "valid-action", fn)
-	ruletest.Workflow(d, "valid-workflow.yml", fn)
 }
 
 func TestFilenameExtensionsAllowedCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := FilenameExtensionsAllowed{}
-	conf := []interface{}{"yml"}
-	d := ruletest.GetDotGithub()
+	for _, fileTypeRequired := range []string{"action", "workflow"} {
+		rule := FilenameExtensionsAllowed{
+			FileTypeRequired: fileTypeRequired,
+		}
+		conf := []interface{}{"yml"}
+		d := ruletest.GetDotGithub()
 
-	fn := func(f dotgithub.File, _ string) {
-		compliant, ruleErrors, err := ruletest.Lint(2, rule, conf, f, d)
-		if !compliant {
-			t.Errorf(
-				"FilenameExtensionsAllowed.Lint should return true when filename extension is in config",
-			)
+		fn := func(f dotgithub.File, _ string) {
+			compliant, ruleErrors, err := ruletest.Lint(2, rule, conf, f, d)
+			if !compliant {
+				t.Errorf(
+					"FilenameExtensionsAllowed.Lint should return true when filename extension is in config",
+				)
+			}
+
+			if err != nil {
+				t.Errorf("FilenameExtensionsAllowed.Lint failed with an error: %s", err.Error())
+			}
+
+			if len(ruleErrors) > 0 {
+				t.Errorf(
+					"FilenameExtensionsAllowed.Lint should not send any error over the channel, sent %s",
+					strings.Join(ruleErrors, "|"),
+				)
+			}
 		}
 
-		if err != nil {
-			t.Errorf("FilenameExtensionsAllowed.Lint failed with an error: %s", err.Error())
-		}
-
-		if len(ruleErrors) > 0 {
-			t.Errorf(
-				"FilenameExtensionsAllowed.Lint should not send any error over the channel, sent %s",
-				strings.Join(ruleErrors, "|"),
-			)
+		if fileTypeRequired == "action" {
+			ruletest.Action(d, "valid-action", fn)
+		} else {
+			ruletest.Workflow(d, "valid-workflow.yml", fn)
 		}
 	}
-
-	ruletest.Action(d, "valid-action", fn)
-	ruletest.Workflow(d, "valid-workflow.yml", fn)
 }

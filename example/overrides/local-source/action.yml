@@ -5,8 +5,10 @@ inputs:
   local-src-input-1:
     description: Some input
     required: true
+outputs:
   local-src-output-2:
-    value: 4
+    description: Some output
+    value: "4"
 
 runs:
   using: "composite"

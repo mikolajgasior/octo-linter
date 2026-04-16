@@ -14,7 +14,9 @@ import (
 // ReferencedInputExists scans the code for all input references and verifies that each has been previously defined.
 // During action or workflow execution, if a reference to an undefined input is found, it is replaced with an empty
 // string.
-type ReferencedInputExists struct{}
+type ReferencedInputExists struct {
+	FileTypeRequired string
+}
 
 // ConfigName returns the name of the rule as defined in the configuration file.
 func (r ReferencedInputExists) ConfigName(t int) string {
@@ -56,8 +58,15 @@ func (r ReferencedInputExists) Lint(
 		return false, errValueNotBool
 	}
 
-	if file.GetType() != rule.DotGithubFileTypeAction &&
-		file.GetType() != rule.DotGithubFileTypeWorkflow {
+	var fileTypeRequired int
+	if r.FileTypeRequired == "action" {
+		fileTypeRequired = rule.DotGithubFileTypeAction
+	}
+	if r.FileTypeRequired == "workflow" {
+		fileTypeRequired = rule.DotGithubFileTypeWorkflow
+	}
+
+	if file.GetType() != fileTypeRequired {
 		return true, nil
 	}
 

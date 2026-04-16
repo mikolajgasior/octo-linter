@@ -22,12 +22,14 @@ rules:
 
   used_actions_in_action_steps:
     source: local-or-external
+    must_exist: ['local', 'external']
+    must_have_valid_inputs: true
   
   used_actions_in_workflow_job_steps:
     source: local-only
 
   dependencies: # Verify that all referenced inputs, outputs, and similar entities are properly defined
-    action_referenced_input_must_exists: true 
+    action_referenced_input_must_exists: true
     action_referenced_step_output_must_exist: true
     workflow_referenced_input_must_exists: true
     workflow_referenced_variable_must_exists_in_attached_file: true

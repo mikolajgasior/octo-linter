@@ -35,7 +35,9 @@ func TestValidInputsValidate(t *testing.T) {
 func TestValidInputsNotCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := ValidInputs{}
+	rule := ValidInputs{
+		FileTypeRequired: "workflow",
+	}
 	conf := true
 	d := ruletest.GetDotGithub()
 
@@ -62,7 +64,9 @@ func TestValidInputsNotCompliant(t *testing.T) {
 func TestValidInputsCompliant(t *testing.T) {
 	t.Parallel()
 
-	rule := ValidInputs{}
+	rule := ValidInputs{
+		FileTypeRequired: "workflow",
+	}
 	conf := true
 	d := ruletest.GetDotGithub()
 

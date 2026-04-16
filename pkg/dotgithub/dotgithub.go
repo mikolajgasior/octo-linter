@@ -142,7 +142,6 @@ func (d *DotGithub) GetExternalAction(name string) *action.Action {
 	if d.ExternalActions == nil {
 		d.ExternalActions = map[string]*action.Action{}
 	}
-
 	return d.ExternalActions[name]
 }
 

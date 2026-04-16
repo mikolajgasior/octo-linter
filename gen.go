@@ -36,12 +36,14 @@ func main() {
 		Rules: map[string]S{
 			"filenames__action_filename_extensions_allowed": {
 				N: "filenames.FilenameExtensionsAllowed",
+				F: map[string]string{"FileTypeRequired": `"action"`},
 			},
 			"filenames__action_directory_name_format": {
 				N: "filenames.ActionDirectoryNameFormat",
 			},
 			"filenames__workflow_filename_extensions_allowed": {
 				N: "filenames.FilenameExtensionsAllowed",
+				F: map[string]string{"FileTypeRequired": `"workflow"`},
 			},
 			"filenames__workflow_filename_base_format": {
 				N: "filenames.WorkflowFilenameBaseFormat",
@@ -51,21 +53,26 @@ func main() {
 			},
 			"referenced_variables_in_actions__not_one_word": {
 				N: "refvars.NotOneWord",
+				F: map[string]string{"FileTypeRequired": `"action"`},
 			},
 			"referenced_variables_in_actions__not_in_double_quotes": {
 				N: "refvars.NotInDoubleQuotes",
+				F: map[string]string{"FileTypeRequired": `"action"`},
 			},
 			"referenced_variables_in_workflows__not_one_word": {
 				N: "refvars.NotOneWord",
+				F: map[string]string{"FileTypeRequired": `"workflow"`},
 			},
 			"referenced_variables_in_workflows__not_in_double_quotes": {
 				N: "refvars.NotInDoubleQuotes",
+				F: map[string]string{"FileTypeRequired": `"workflow"`},
 			},
 			"dependencies__workflow_needs_field_must_contain_already_existing_jobs": {
 				N: "dependencies.WorkflowNeedsWithExistingJobs",
 			},
 			"dependencies__action_referenced_input_must_exists": {
 				N: "dependencies.ReferencedInputExists",
+				F: map[string]string{"FileTypeRequired": `"action"`},
 			},
 			"dependencies__action_referenced_step_output_must_exist": {
 				N: "dependencies.ActionReferencedStepOutputExists",
@@ -75,24 +82,31 @@ func main() {
 			},
 			"dependencies__workflow_referenced_input_must_exists": {
 				N: "dependencies.ReferencedInputExists",
+				F: map[string]string{"FileTypeRequired": `"workflow"`},
 			},
 			"used_actions_in_action_steps__source": {
 				N: "usedactions.Source",
+				F: map[string]string{"FileTypeRequired": `"action"`},
 			},
 			"used_actions_in_action_steps__must_exist": {
 				N: "usedactions.Exists",
+				F: map[string]string{"FileTypeRequired": `"action"`},
 			},
 			"used_actions_in_action_steps__must_have_valid_inputs": {
 				N: "usedactions.ValidInputs",
+				F: map[string]string{"FileTypeRequired": `"action"`},
 			},
 			"used_actions_in_workflow_job_steps__source": {
 				N: "usedactions.Source",
+				F: map[string]string{"FileTypeRequired": `"workflow"`},
 			},
 			"used_actions_in_workflow_job_steps__must_exist": {
 				N: "usedactions.Exists",
+				F: map[string]string{"FileTypeRequired": `"workflow"`},
 			},
 			"used_actions_in_workflow_job_steps__must_have_valid_inputs": {
 				N: "usedactions.ValidInputs",
+				F: map[string]string{"FileTypeRequired": `"workflow"`},
 			},
 			"naming_conventions__action_input_name_format": {
 				N: "naming.Action",
