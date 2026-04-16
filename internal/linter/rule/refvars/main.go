@@ -17,23 +17,21 @@ var (
 	errValueNotBool    = errors.New("value should be bool")
 )
 
-const (
-	regexpReferenceInDoubleQuote = `\"\${{[ ]*([a-zA-Z0-9\-_.]+)[ ]*}}\"`
-	regexpReference              = `\${{[ ]*([a-zA-Z0-9\-_]+)[ ]*}}`
+var (
+	regexpReferenceInDoubleQuote = regexp.MustCompile(`\"\${{[ ]*([a-zA-Z0-9\-_.]+)[ ]*}}\"`)
+	regexpReference              = regexp.MustCompile(`\${{[ ]*([a-zA-Z0-9\-_]+)[ ]*}}`)
 )
 
 func processActionForRegexp(
 	ruleConfigName string,
 	actionInstance *action.Action,
-	regexpToMatch string,
+	regexpToMatch *regexp.Regexp,
 	chErrors chan<- glitch.Glitch,
 	errorText string,
 ) bool {
 	foundNotCompliant := false
 
-	refRegexp := regexp.MustCompile(regexpToMatch)
-
-	found := refRegexp.FindAllSubmatch(actionInstance.Raw, -1)
+	found := regexpToMatch.FindAllSubmatch(actionInstance.Raw, -1)
 	for _, ref := range found {
 		chErrors <- glitch.Glitch{
 			Path:     actionInstance.Path,
@@ -52,15 +50,13 @@ func processActionForRegexp(
 func processWorkflowForRegexp(
 	ruleConfigName string,
 	workflowInstance *workflow.Workflow,
-	regexpToMatch string,
+	regexpToMatch *regexp.Regexp,
 	chErrors chan<- glitch.Glitch,
 	errorText string,
 ) bool {
 	foundNotCompliant := false
 
-	refRegexp := regexp.MustCompile(regexpToMatch)
-
-	found := refRegexp.FindAllSubmatch(workflowInstance.Raw, -1)
+	found := regexpToMatch.FindAllSubmatch(workflowInstance.Raw, -1)
 	for _, ref := range found {
 		chErrors <- glitch.Glitch{
 			Path:     workflowInstance.Path,

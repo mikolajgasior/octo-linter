@@ -2,7 +2,6 @@ package dependencies
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/mikolajgasior/octo-linter/v2/internal/linter/glitch"
@@ -59,22 +58,9 @@ func (r ActionReferencedStepOutputExists) Lint(
 		return false, errFileInvalidType
 	}
 
-	reStepOutput := regexp.MustCompile(
-		`\${{[ ]*steps\.([a-zA-Z0-9\-_]+)\.outputs\.([a-zA-Z0-9\-_]+)[ ]*}}`,
-	)
-	reAppendToGithubOutput := regexp.MustCompile(
-		`echo[ ]+["']([a-zA-Z0-9\-_]+)=.*["'][ ]+.*>>[ ]+["]{0,1}\$GITHUB_OUTPUT["]{0,1}`,
-	)
-	reLocal := regexp.MustCompile(
-		`^\.\/\.github\/actions\/([a-z0-9\-]+|[a-z0-9\-]+\/[a-z0-9\-]+)$`,
-	)
-	reExternal := regexp.MustCompile(
-		`[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]){0,1}@[a-zA-Z0-9\.\-\_]+`,
-	)
-
 	compliant := true
 
-	found := reStepOutput.FindAllSubmatch(actionInstance.Raw, -1)
+	found := regexpStepOutput.FindAllSubmatch(actionInstance.Raw, -1)
 	for _, foundStepOutput := range found {
 		stepName := string(foundStepOutput[1])
 		outputName := string(foundStepOutput[2])
@@ -112,7 +98,7 @@ func (r ActionReferencedStepOutputExists) Lint(
 
 		// search in 'run' when there is no 'uses'
 		if step.Uses == "" && step.Run != "" {
-			foundEchoLines := reAppendToGithubOutput.FindAllSubmatch([]byte(step.Run), -1)
+			foundEchoLines := regexpAppendToGithubOutput.FindAllSubmatch([]byte(step.Run), -1)
 			for _, foundEchoLine := range foundEchoLines {
 				if outputName == string(foundEchoLine[1]) {
 					foundOutput = true
@@ -140,12 +126,12 @@ func (r ActionReferencedStepOutputExists) Lint(
 
 		var foundAction *action.Action
 		// local action
-		if reLocal.MatchString(step.Uses) {
+		if regexpLocal.MatchString(step.Uses) {
 			actionName := strings.ReplaceAll(step.Uses, "./.github/actions/", "")
 			foundAction = dotGithub.GetAction(actionName)
 		}
 		// external action
-		if reExternal.MatchString(step.Uses) {
+		if regexpExternal.MatchString(step.Uses) {
 			foundAction = dotGithub.GetExternalAction(step.Uses)
 		}
 

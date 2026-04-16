@@ -113,13 +113,22 @@ func (cfg *Config) readBytesAndValidate(b []byte) error {
 	}
 
 	if len(cfg.Overrides.ExternalActionsOutputsConfig) > 0 {
-		cfg.Overrides.ExternalActionsOutputs = make(map[string][]*regexp.Regexp, len(cfg.Overrides.ExternalActionsOutputsConfig))
+		cfg.Overrides.ExternalActionsOutputs = make(
+			map[string][]*regexp.Regexp,
+			len(cfg.Overrides.ExternalActionsOutputsConfig),
+		)
 		for actionPath, output := range cfg.Overrides.ExternalActionsOutputsConfig {
 			cfg.Overrides.ExternalActionsOutputs[actionPath] = make([]*regexp.Regexp, len(output))
 			for i, outputRegex := range output {
-				cfg.Overrides.ExternalActionsOutputs[actionPath][i], err = regexp.Compile(outputRegex)
+				cfg.Overrides.ExternalActionsOutputs[actionPath][i], err = regexp.Compile(
+					outputRegex,
+				)
 				if err != nil {
-					return fmt.Errorf("error compiling external action output regex %s: %w", outputRegex, err)
+					return fmt.Errorf(
+						"error compiling external action output regex %s: %w",
+						outputRegex,
+						err,
+					)
 				}
 			}
 		}

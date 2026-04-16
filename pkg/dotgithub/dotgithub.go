@@ -34,14 +34,17 @@ const (
 	NumExternalActionPathPartsNoSubdir = 2
 )
 
-const (
-	regexpExternalAction = `[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]){0,1}@[a-zA-Z0-9\.\-\_]+`
-)
-
 var (
 	errExternalActionNotFound  = errors.New("external action was not found")
 	errActionHTTPRequestDo     = errors.New("error doing http request for action yaml")
 	errActionHTTPRequestCreate = errors.New("error creating http request for action yaml")
+)
+
+var (
+	filenameRegex        = regexp.MustCompile(`\.y[a]{0,1}ml$`)
+	regexpExternalAction = regexp.MustCompile(
+		`[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]){0,1}@[a-zA-Z0-9\.\-\_]+`,
+	)
 )
 
 func errCreatingHTTPRequestForAction(err error) error {
@@ -53,7 +56,11 @@ func errDoingHTTPRequestForAction(err error) error {
 }
 
 // ReadDir scans the given directory and parses all GitHub Actions workflow and action YAML files into the struct.
-func (d *DotGithub) ReadDir(ctx context.Context, path string, overridePaths map[string]string) error {
+func (d *DotGithub) ReadDir(
+	ctx context.Context,
+	path string,
+	overridePaths map[string]string,
+) error {
 	d.Actions = make(map[string]*action.Action)
 	d.Workflows = make(map[string]*workflow.Workflow)
 
@@ -279,9 +286,8 @@ func (d *DotGithub) getWorkflowsFromDir(path string) error {
 		return fmt.Errorf("error reading workflows directory %s: %w", dirWorkflows, err)
 	}
 
-	nameRegex := regexp.MustCompile(`\.y[a]{0,1}ml$`)
 	for _, entry := range entries {
-		m := nameRegex.MatchString(entry.Name())
+		m := filenameRegex.MatchString(entry.Name())
 		if !m {
 			continue
 		}
@@ -308,16 +314,18 @@ func (d *DotGithub) getWorkflowsFromDir(path string) error {
 func (d *DotGithub) processActions(ctx context.Context) error {
 	// get contents from already existing external actions that are overridden by local actions
 	var err error
-	for path, _ := range d.ExternalActions {
+	for path := range d.ExternalActions {
 		err = d.ExternalActions[path].Unmarshal(false)
 		if err != nil {
-			return fmt.Errorf("error unmarshaling external action overridden by a local file %s: %w", path, err)
+			return fmt.Errorf(
+				"error unmarshaling external action overridden by a local file %s: %w",
+				path,
+				err,
+			)
 		}
 	}
 
 	// download all external actions used in actions' steps
-	reExternal := regexp.MustCompile(regexpExternalAction)
-
 	for _, action := range d.Actions {
 		err := action.Unmarshal(false)
 		if err != nil {
@@ -329,7 +337,7 @@ func (d *DotGithub) processActions(ctx context.Context) error {
 		}
 
 		for stepIdx, step := range action.Runs.Steps {
-			if !reExternal.MatchString(step.Uses) {
+			if !regexpExternalAction.MatchString(step.Uses) {
 				continue
 			}
 
@@ -351,8 +359,6 @@ func (d *DotGithub) processActions(ctx context.Context) error {
 
 func (d *DotGithub) processWorkflows(ctx context.Context) error {
 	// download all external actions used in actions' steps
-	reExternal := regexp.MustCompile(regexpExternalAction)
-
 	for _, workflow := range d.Workflows {
 		err := workflow.Unmarshal(false)
 		if err != nil {
@@ -369,7 +375,7 @@ func (d *DotGithub) processWorkflows(ctx context.Context) error {
 			}
 
 			for stepIdx, step := range job.Steps {
-				if !reExternal.MatchString(step.Uses) {
+				if !regexpExternalAction.MatchString(step.Uses) {
 					continue
 				}
 

@@ -122,7 +122,14 @@ func createLintCommand(cli *broccli.Broccli) {
 		broccli.IsRegularFile|broccli.IsExistent,
 	)
 	cmdLint.Flag("loglevel", "l", "", "One of INFO,ERR,WARN,DEBUG", broccli.TypeString, 0)
-	cmdLint.Flag("logmultiline", "m", "", "Each log entry key in a separate line", broccli.TypeBool, 0)
+	cmdLint.Flag(
+		"logmultiline",
+		"m",
+		"",
+		"Each log entry key in a separate line",
+		broccli.TypeBool,
+		0,
+	)
 	cmdLint.Flag(
 		"vars-file",
 		"z",

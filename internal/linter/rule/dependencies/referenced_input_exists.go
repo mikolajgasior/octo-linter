@@ -2,7 +2,6 @@ package dependencies
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/mikolajgasior/octo-linter/v2/internal/linter/glitch"
 	"github.com/mikolajgasior/octo-linter/v2/internal/linter/rule"
@@ -114,9 +113,7 @@ func (r ReferencedInputExists) processAction(
 ) bool {
 	foundNotCompliant := false
 
-	re := regexp.MustCompile(regexpRefInput)
-
-	found := re.FindAllSubmatch(actionInstance.Raw, -1)
+	found := regexpRefInput.FindAllSubmatch(actionInstance.Raw, -1)
 	for _, refInput := range found {
 		if actionInstance.Inputs == nil || actionInstance.Inputs[string(refInput[1])] == nil {
 			chErrors <- glitch.Glitch{
@@ -140,9 +137,7 @@ func (r ReferencedInputExists) processWorkflow(
 ) bool {
 	foundNotCompliant := false
 
-	re := regexp.MustCompile(regexpRefInput)
-
-	found := re.FindAllSubmatch(workflowInstance.Raw, -1)
+	found := regexpRefInput.FindAllSubmatch(workflowInstance.Raw, -1)
 	for _, refInput := range found {
 		notInInputs := true
 

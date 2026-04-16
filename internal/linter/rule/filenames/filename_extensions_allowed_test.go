@@ -65,7 +65,6 @@ func TestFilenameExtensionsAllowedNotCompliant(t *testing.T) {
 			ruletest.Workflow(d, "valid-workflow.yml", fn)
 		}
 	}
-
 }
 
 func TestFilenameExtensionsAllowedCompliant(t *testing.T) {

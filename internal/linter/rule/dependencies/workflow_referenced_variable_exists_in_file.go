@@ -2,7 +2,6 @@ package dependencies
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/mikolajgasior/octo-linter/v2/internal/linter/glitch"
 	"github.com/mikolajgasior/octo-linter/v2/internal/linter/rule"
@@ -60,7 +59,10 @@ func (r WorkflowReferencedVariableExistsInFile) Lint(
 
 	varTypes := []string{"vars", "secrets"}
 	for _, varType := range varTypes {
-		re := regexp.MustCompile(fmt.Sprintf("\\${{[ ]*%s\\.([a-zA-Z0-9\\-_]+)[ ]*}}", varType))
+		re := regexpRefs[varType]
+		if re == nil {
+			continue
+		}
 
 		found := re.FindAllSubmatch(workflowInstance.Raw, -1)
 		for _, refVar := range found {

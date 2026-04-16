@@ -4,6 +4,7 @@ package naming
 import (
 	"errors"
 	"fmt"
+	"regexp"
 )
 
 const (
@@ -28,3 +29,9 @@ var (
 	)
 	errFileInvalidType = errors.New("file is of invalid type")
 )
+
+var regexpRefs = map[string]*regexp.Regexp{
+	"env":     regexp.MustCompile("\\${{[ ]*env\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
+	"vars":    regexp.MustCompile("\\${{[ ]*var\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
+	"secrets": regexp.MustCompile("\\${{[ ]*secret\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
+}
