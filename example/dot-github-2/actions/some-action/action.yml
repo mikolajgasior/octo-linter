@@ -10,5 +10,11 @@ runs:
 
     - name: Calling external action overridden from local source
       uses: mikolajgasior/read-from-local-path@v1
+      id: action-1
       #with:
       #  local-src-input-1: "abc123"
+
+    - name: Getting output from previous action
+      runs: |
+        echo "Below output is not present in action but regular expression matching it is in the config-2 file"
+        echo "${{ steps.action-1.outputs.matchme1 }}"

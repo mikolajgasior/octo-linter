@@ -40,3 +40,7 @@ rules:
 overrides:
   external_actions_paths:
     mikolajgasior/read-from-local-path@v1: ./overrides/local-source
+
+  external_actions_outputs:
+    mikolajgasior/read-from-local-path@v1:
+      - ^matchme[0-9]+$

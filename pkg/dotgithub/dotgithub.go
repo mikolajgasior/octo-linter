@@ -60,11 +60,12 @@ func (d *DotGithub) ReadDir(
 	ctx context.Context,
 	path string,
 	overridePaths map[string]string,
+	overrideOutputs map[string][]*regexp.Regexp,
 ) error {
 	d.Actions = make(map[string]*action.Action)
 	d.Workflows = make(map[string]*workflow.Workflow)
 
-	err := d.getActionsFromDir(path, overridePaths)
+	err := d.getActionsFromDir(path, overridePaths, overrideOutputs)
 	if err != nil {
 		return fmt.Errorf("error getting actions from dir %s: %w", path, err)
 	}
@@ -223,7 +224,7 @@ func (d *DotGithub) IsSecretExist(name string) bool {
 	return ok
 }
 
-func (d *DotGithub) getActionsFromDir(path string, overridePaths map[string]string) error {
+func (d *DotGithub) getActionsFromDir(path string, overridePaths map[string]string, overrideOutputs map[string][]*regexp.Regexp) error {
 	dirActions := filepath.Join(path, "actions")
 
 	entries, err := os.ReadDir(dirActions)
@@ -245,10 +246,19 @@ func (d *DotGithub) getActionsFromDir(path string, overridePaths map[string]stri
 			continue
 		}
 
-		d.Actions[entry.Name()] = &action.Action{
+		actionInstance := &action.Action{
 			Path:    ymlAction,
 			DirName: entry.Name(),
 		}
+
+		if len(overrideOutputs) > 0 {
+			regExps, ok := overrideOutputs[entry.Name()]
+			if ok {
+				actionInstance.DynamicOutputs = regExps
+			}
+		}
+
+		d.Actions[entry.Name()] = actionInstance
 	}
 
 	if len(overridePaths) == 0 {
@@ -269,10 +279,19 @@ func (d *DotGithub) getActionsFromDir(path string, overridePaths map[string]stri
 			continue
 		}
 
-		d.ExternalActions[actionPath] = &action.Action{
+		actionInstance := &action.Action{
 			Path:    ymlAction,
 			DirName: "",
 		}
+
+		if len(overrideOutputs) > 0 {
+			regExps, ok := overrideOutputs[actionPath]
+			if ok {
+				actionInstance.DynamicOutputs = regExps
+			}
+		}
+
+		d.ExternalActions[actionPath] = actionInstance
 	}
 
 	return nil

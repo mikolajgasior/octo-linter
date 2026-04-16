@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"regexp"
 
 	"gopkg.in/yaml.v2"
 )
@@ -16,14 +17,15 @@ const (
 
 // Action represents a GitHub Actions' action parsed from a YAML file.
 type Action struct {
-	Path        string
-	Raw         []byte
-	DirName     string
-	Name        string             `yaml:"name"`
-	Description string             `yaml:"description"`
-	Inputs      map[string]*Input  `yaml:"inputs"`
-	Outputs     map[string]*Output `yaml:"outputs"`
-	Runs        *Runs              `yaml:"runs"`
+	Path           string
+	Raw            []byte
+	DirName        string
+	Name           string             `yaml:"name"`
+	Description    string             `yaml:"description"`
+	Inputs         map[string]*Input  `yaml:"inputs"`
+	Outputs        map[string]*Output `yaml:"outputs"`
+	DynamicOutputs []*regexp.Regexp   `yaml:"-"`
+	Runs           *Runs              `yaml:"runs"`
 }
 
 // Unmarshal parses YAML from a file in struct's Path or from struct's Raw field.

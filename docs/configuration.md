@@ -79,6 +79,23 @@ overrides:
     my-organisation/repo-name@v1: ../repo-name
 ````
 
+### Regular expressions for action output checks 
+Actions outputs are not always defined, and sometimes they do not have a fixed name. The name can depend on the input value. One of the examples of such actions is 
+[aws-actions/amazon-ecr-login](https://github.com/aws-actions/amazon-ecr-login). It creates outputs such as `docker_username_123456789012_dkr_ecr_aws_region_1_amazonaws_com`.
+Such output cannot be defined in the configuration file, and therefore it is not possible to check it. To overcome this limitation, octo-linter allows to use 
+regular expressions to match the output name.
+See an example below.
+
+````yaml
+overrides:
+  external_actions_outputs:
+    aws-actions/amazon-ecr-login:
+      - ^docker_(username|password)_[0-9]+_dkr_ecr_aws_[a-z1-6_]+_amazonaws_com$
+      - ^docker_(username|password)_public_ecr_aws$
+````
+
+With the above configuration, the `dependencies.action_referenced_step_output_must_exist` rule will try to match the output name against the regular expressions.
+
 ### Version compatibility
 The latest `v2` version of the application supports only configuration version `'3'`. Older configuration versions are no longer supported and would 
 require using the previous `v1` release of octo-linter.

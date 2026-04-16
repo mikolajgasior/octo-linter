@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	"github.com/mikolajgasior/broccli/v3"
@@ -377,14 +378,20 @@ func getDotGithub(
 	dotGithub := dotgithub.DotGithub{}
 
 	overridePaths := map[string]string{}
+	overrideOutputs := map[string][]*regexp.Regexp{}
 
-	if overrides != nil && len(overrides.ExternalActionsPaths) > 0 {
-		for action, path := range overrides.ExternalActionsPaths {
-			overridePaths[action] = path
+	if overrides != nil {
+		if len(overrides.ExternalActionsPaths) > 0 {
+			for action, path := range overrides.ExternalActionsPaths {
+				overridePaths[action] = path
+			}
+		}
+		if len(overrides.ExternalActionsOutputs) > 0 {
+			overrideOutputs = overrides.ExternalActionsOutputs
 		}
 	}
 
-	err := dotGithub.ReadDir(ctx, dotGithubPath, overridePaths)
+	err := dotGithub.ReadDir(ctx, dotGithubPath, overridePaths, overrideOutputs)
 	if err != nil {
 		slog.Error(
 			"error initializing",

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"regexp"
 	"sync"
 	"time"
 
@@ -34,6 +35,7 @@ func GetDotGithub() *dotgithub.DotGithub {
 			context.Background(),
 			"../../../../tests/rules",
 			map[string]string{},
+			map[string][]*regexp.Regexp{},
 		)
 	})
 

@@ -155,6 +155,15 @@ func (r ActionReferencedStepOutputExists) Lint(
 			}
 		}
 
+		// output might exist in config overrides which are added to action instances as DynamicOutputs
+		if len(foundAction.DynamicOutputs) > 0 {
+			for _, outputRegexp := range foundAction.DynamicOutputs {
+				if outputRegexp.MatchString(outputName) {
+					foundOutput = true
+				}
+			}
+		}
+
 		if !foundOutput {
 			chErrors <- glitch.Glitch{
 				Path:     actionInstance.Path,
