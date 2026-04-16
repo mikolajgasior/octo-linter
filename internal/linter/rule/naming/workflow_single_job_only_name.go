@@ -9,7 +9,7 @@ import (
 	"github.com/mikolajgasior/octo-linter/v2/pkg/workflow"
 )
 
-// WorkflowSingleJobOnlyName checks if workflow has only one job, this should be its name.
+// WorkflowSingleJobOnlyName checks if a workflow has only one job, this should be its name.
 type WorkflowSingleJobOnlyName struct{}
 
 // ConfigName returns the name of the rule as defined in the configuration file.

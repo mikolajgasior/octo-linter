@@ -10,7 +10,7 @@ import (
 	"github.com/mikolajgasior/octo-linter/v2/pkg/workflow"
 )
 
-// Workflow checks if specified workflow field adheres to the selected naming convention.
+// Workflow checks if the specified workflow field adheres to the selected naming convention.
 type Workflow struct {
 	Field int
 }

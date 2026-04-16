@@ -1,4 +1,4 @@
 package main
 
-// VERSION is application version. It is used with 'version' subcommand.
+// VERSION is the application version. It is used with the 'version' subcommand.
 const VERSION = "2.4.1"

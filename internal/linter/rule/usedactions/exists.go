@@ -174,8 +174,8 @@ func (r Exists) processSteps(
 		if checkLocal && isLocal {
 			actionName := strings.ReplaceAll(step.Uses, "./.github/actions/", "")
 
-			action := dotGithub.GetAction(actionName)
-			if action == nil {
+			actionInstance := dotGithub.GetAction(actionName)
+			if actionInstance == nil {
 				compliant = false
 
 				chErrors <- glitch.Glitch{
@@ -189,8 +189,8 @@ func (r Exists) processSteps(
 		}
 
 		if checkExternal && isExternal {
-			action := dotGithub.GetExternalAction(step.Uses)
-			if action == nil {
+			actionInstance := dotGithub.GetExternalAction(step.Uses)
+			if actionInstance == nil {
 				compliant = false
 
 				chErrors <- glitch.Glitch{

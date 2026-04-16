@@ -8,7 +8,7 @@ import (
 	"github.com/mikolajgasior/octo-linter/v2/pkg/dotgithub"
 )
 
-// ActionDirectoryNameFormat checks if directory containing action adheres to the selected naming convention.
+// ActionDirectoryNameFormat checks if the directory containing the action adheres to the selected naming convention.
 type ActionDirectoryNameFormat struct{}
 
 // ConfigName returns the name of the rule as defined in the configuration file.

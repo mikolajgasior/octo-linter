@@ -10,7 +10,7 @@ const (
 	// ValueDashCase is a configuration value indicating that a field should follow the dash-case convention.
 	ValueDashCase = "dash-case"
 	// ValueDashCaseUnderscore is a configuration value indicating that a field should follow the dash-case with
-	// underscore prefix allowed convention.
+	// an underscore prefix allowed convention.
 	ValueDashCaseUnderscore = "dash-case;underscore-prefix-allowed"
 	// ValueCamelCase is a configuration value indicating that a field should follow the camel-case convention.
 	ValueCamelCase = "camelCase"

@@ -30,7 +30,7 @@ func (h *customHandler) Handle(_ context.Context, r slog.Record) error {
 	})
 	buf.WriteString("---\n")
 
-	fmt.Fprint(os.Stderr, buf.String())
+	_, _ = fmt.Fprint(os.Stderr, buf.String())
 	return nil
 }
 

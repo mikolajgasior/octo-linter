@@ -55,7 +55,7 @@ func (cfg *Config) ReadDefaultFile() error {
 	return nil
 }
 
-// IsError checks if rule has been set to have a status of error.
+// IsError checks if the rule has been set to have a status of error.
 func (cfg *Config) IsError(rule string) bool {
 	_, isWarn := cfg.WarningOnly[rule]
 

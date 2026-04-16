@@ -10,7 +10,7 @@ import (
 	"github.com/mikolajgasior/octo-linter/v2/pkg/workflow"
 )
 
-// FilenameExtensionsAllowed checks if file extension is one of the specific values, eg. 'yml' or 'yaml'.
+// FilenameExtensionsAllowed checks if the file extension is one of the specific values, eg. 'yml' or 'yaml'.
 type FilenameExtensionsAllowed struct {
 	FileTypeRequired string
 }

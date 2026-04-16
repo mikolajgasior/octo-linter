@@ -11,7 +11,7 @@ import (
 	"github.com/mikolajgasior/octo-linter/v2/pkg/workflow"
 )
 
-// Source checks if referenced action (in `uses`) in steps has valid path.
+// Source checks if the referenced action (in `uses`) in steps has a valid path.
 // This rule can be configured to allow local actions, external actions, or both.
 type Source struct {
 	FileTypeRequired string

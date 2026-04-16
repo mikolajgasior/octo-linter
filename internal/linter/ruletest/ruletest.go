@@ -40,7 +40,7 @@ func GetDotGithub() *dotgithub.DotGithub {
 	return testDotGithub
 }
 
-// Lint runs a rule with specific configuration on a specified file and returns all lint errors and a boolean
+// Lint runs a rule with a specific configuration on a specified file and returns all lint errors and a boolean
 // indicating whether it is compliant or not.
 func Lint(
 	timeout int,

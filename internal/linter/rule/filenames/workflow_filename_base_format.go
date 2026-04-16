@@ -10,7 +10,7 @@ import (
 	"github.com/mikolajgasior/octo-linter/v2/pkg/workflow"
 )
 
-// WorkflowFilenameBaseFormat checks if workflow file basename (without extension) adheres to the selected naming
+// WorkflowFilenameBaseFormat checks if the workflow file basename (without extension) adheres to the selected naming
 // convention.
 type WorkflowFilenameBaseFormat struct{}
 

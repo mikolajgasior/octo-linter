@@ -266,7 +266,7 @@ func lintHandler(ctx context.Context, cli *broccli.Broccli) int {
 
 	outputLimit := 0
 	if cli.Flag("output-errors") != "" {
-		// flag is already validated by the cli
+		// the cli already validates flag
 		outputLimit, _ = strconv.Atoi(cli.Flag("output-errors"))
 	}
 

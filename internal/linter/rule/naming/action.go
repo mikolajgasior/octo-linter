@@ -10,7 +10,7 @@ import (
 	"github.com/mikolajgasior/octo-linter/v2/pkg/dotgithub"
 )
 
-// Action checks if specified action field adheres to the selected naming convention.
+// Action checks if the specified action field adheres to the selected naming convention.
 type Action struct {
 	Field int
 }
