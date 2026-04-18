@@ -23,6 +23,7 @@ type Config struct {
 	Values      []interface{}                     `yaml:"-"`
 	WarningOnly map[string]struct{}               `yaml:"-"`
 	Overrides   *Overrides                        `yaml:"overrides,omitempty"`
+	Paths       *Paths                            `yaml:"paths,omitempty"`
 }
 
 // GetDefaultConfig returns a default configuration file.

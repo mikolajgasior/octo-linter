@@ -47,3 +47,7 @@ overrides:
     aws-actions/amazon-ecr-login@v2:
       - ^docker_(username|password)_[0-9]+_dkr_ecr_[a-z1-6_]+_amazonaws_com$
       - ^docker_(username|password)_public_ecr_aws$
+
+paths:
+  no_checking:
+    - dot-github-2/actions/no-check*/*

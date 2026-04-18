@@ -63,6 +63,11 @@ func (l *Linter) Lint(dotGithub *dotgithub.DotGithub, output string, outputLimit
 
 	go func() {
 		for _, action := range dotGithub.Actions {
+			if l.Config != nil && !l.Config.Paths.Check(action.Path) {
+				slog.Info("skipping action due to 'paths' configuration", slog.String("path", action.Path))
+				continue
+			}
+
 			for ruleIdx, ruleEntry := range l.Config.Rules {
 				if ruleEntry.FileType()&rule.DotGithubFileTypeAction == 0 {
 					continue
@@ -82,6 +87,11 @@ func (l *Linter) Lint(dotGithub *dotgithub.DotGithub, output string, outputLimit
 		}
 
 		for _, workflow := range dotGithub.Workflows {
+			if l.Config != nil && !l.Config.Paths.Check(workflow.Path) {
+				slog.Info("skipping workflow due to 'paths' configuration", slog.String("path", workflow.Path))
+				continue
+			}
+
 			for ruleIdx, ruleEntry := range l.Config.Rules {
 				if ruleEntry.FileType()&rule.DotGithubFileTypeWorkflow == 0 {
 					continue
