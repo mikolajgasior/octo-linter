@@ -52,3 +52,26 @@ runs:
     - name: Call to existing input
       run: |
         echo '${{ inputs.required-input-1 }}'
+
+    - name: Override external action with local source
+      uses: fake-username/fake-external-action@v1
+      id: fake-external-action
+      with:
+        input-1: "value"
+
+    - name: Use output from external action
+      shell: bash
+      run: |
+        echo '${{ steps.fake-external-action.outputs.output-1 }}'
+        echo '${{ steps.fake-external-action.outputs.dynamic-output-123 }}'
+
+    - name: Call ECR login
+      uses: aws-actions/amazon-ecr-login@v2
+      id: ecr-login
+      with:
+        registries: 123456789012345678
+
+    - name: Use output from ECR login
+      shell: bash
+      run: |
+        echo '${{ steps.ecr-login.outputs.docker_username_123456789012345678_dkr_ecr_eu_west_1_amazonaws_com }}'

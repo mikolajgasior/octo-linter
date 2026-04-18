@@ -1,0 +1,18 @@
+---
+name: Fake external action
+description: Fake external action
+inputs:
+  input-1:
+    description: Input that is required
+    required: true
+outputs:
+  output-1:
+    description: Sample output
+    value: "output1"
+runs:
+  using: "composite"
+  steps:
+    - name: Echo something
+      shell: bash
+      run: |
+        echo "something"

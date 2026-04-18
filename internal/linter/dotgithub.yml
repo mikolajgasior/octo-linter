@@ -78,6 +78,6 @@ rules:
 
 overrides:
   external_actions_outputs:
-    aws-actions/amazon-ecr-login:
-      - ^docker_(username|password)_[0-9]+_dkr_ecr_aws_[a-z1-6_]+_amazonaws_com$
+    aws-actions/amazon-ecr-login@v2:
+      - ^docker_(username|password)_[0-9]+_dkr_ecr_[a-z1-6_]+_amazonaws_com$
       - ^docker_(username|password)_public_ecr_aws$

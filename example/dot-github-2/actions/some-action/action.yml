@@ -18,3 +18,14 @@ runs:
       runs: |
         echo "Below output is not present in action but regular expression matching it is in the config-2 file"
         echo "${{ steps.action-1.outputs.matchme1 }}"
+
+    - name: Call ECR login
+      uses: aws-actions/amazon-ecr-login@v2
+      id: ecr-login
+      with:
+        registries: 123456789012345678
+
+    - name: Use output from ECR login
+      shell: bash
+      run: |
+        echo "${{ steps.ecr-login.outputs.docker_username_123456789012345678_dkr_ecr_eu_west_1_amazonaws_com }}"

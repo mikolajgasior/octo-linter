@@ -75,12 +75,12 @@ func (d *DotGithub) ReadDir(
 		return fmt.Errorf("error getting workflows from dir %s: %w", path, err)
 	}
 
-	err = d.processActions(ctx)
+	err = d.processActions(ctx, overrideOutputs)
 	if err != nil {
 		return fmt.Errorf("error processing struct actions: %w", err)
 	}
 
-	err = d.processWorkflows(ctx)
+	err = d.processWorkflows(ctx, overrideOutputs)
 	if err != nil {
 		return fmt.Errorf("error processing struct workflows: %w", err)
 	}
@@ -154,7 +154,7 @@ func (d *DotGithub) GetExternalAction(name string) *action.Action {
 }
 
 // DownloadExternalAction downloads a GitHub Action from its “uses” path (e.g., "actions/checkout@v4").
-func (d *DotGithub) DownloadExternalAction(ctx context.Context, path string) error {
+func (d *DotGithub) DownloadExternalAction(ctx context.Context, path string, overrideOutputs map[string][]*regexp.Regexp) error {
 	if d.ExternalActions == nil {
 		d.ExternalActions = map[string]*action.Action{}
 	}
@@ -196,11 +196,20 @@ func (d *DotGithub) DownloadExternalAction(ctx context.Context, path string) err
 
 	b, _ := io.ReadAll(resp.Body)
 
-	d.ExternalActions[path] = &action.Action{
+	actionInstance := &action.Action{
 		Path:    path,
 		DirName: "",
 		Raw:     b,
 	}
+
+	if len(overrideOutputs) > 0 {
+		regExps, ok := overrideOutputs[path]
+		if ok {
+			actionInstance.DynamicOutputs = regExps
+		}
+	}
+
+	d.ExternalActions[path] = actionInstance
 
 	err = d.ExternalActions[path].Unmarshal(true)
 	if err != nil {
@@ -330,7 +339,7 @@ func (d *DotGithub) getWorkflowsFromDir(path string) error {
 	return nil
 }
 
-func (d *DotGithub) processActions(ctx context.Context) error {
+func (d *DotGithub) processActions(ctx context.Context, overrideOutputs map[string][]*regexp.Regexp) error {
 	// get contents from already existing external actions that are overridden by local actions
 	var err error
 	for path := range d.ExternalActions {
@@ -360,7 +369,7 @@ func (d *DotGithub) processActions(ctx context.Context) error {
 				continue
 			}
 
-			err := d.DownloadExternalAction(ctx, step.Uses)
+			err := d.DownloadExternalAction(ctx, step.Uses, overrideOutputs)
 			if err != nil {
 				slog.Error(
 					"error downloading external action",
@@ -376,7 +385,7 @@ func (d *DotGithub) processActions(ctx context.Context) error {
 	return nil
 }
 
-func (d *DotGithub) processWorkflows(ctx context.Context) error {
+func (d *DotGithub) processWorkflows(ctx context.Context, overrideOutputs map[string][]*regexp.Regexp) error {
 	// download all external actions used in actions' steps
 	for _, workflow := range d.Workflows {
 		err := workflow.Unmarshal(false)
@@ -398,7 +407,7 @@ func (d *DotGithub) processWorkflows(ctx context.Context) error {
 					continue
 				}
 
-				err := d.DownloadExternalAction(ctx, step.Uses)
+				err := d.DownloadExternalAction(ctx, step.Uses, overrideOutputs)
 				if err != nil {
 					slog.Error(
 						"error downloading external action",

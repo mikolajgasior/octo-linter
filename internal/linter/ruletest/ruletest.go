@@ -34,8 +34,17 @@ func GetDotGithub() *dotgithub.DotGithub {
 		_ = testDotGithub.ReadDir(
 			context.Background(),
 			"../../../../tests/rules",
-			map[string]string{},
-			map[string][]*regexp.Regexp{},
+			map[string]string{
+				"fake-username/fake-external-action@v1": "./../../../../tests/fake-external-action",
+			},
+			map[string][]*regexp.Regexp{
+				"fake-username/fake-external-action@v1": {
+					regexp.MustCompile(`^dynamic-output-[0-9]+$`),
+				},
+				"aws-actions/amazon-ecr-login@v2": {
+					regexp.MustCompile(`^docker_(username|password)_[0-9]+_dkr_ecr_[a-z1-6_]+_amazonaws_com$`),
+				},
+			},
 		)
 	})
 
