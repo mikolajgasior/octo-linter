@@ -96,6 +96,20 @@ overrides:
 
 With the above configuration, the `dependencies.action_referenced_step_output_must_exist` rule will try to match the output name against the regular expressions.
 
+### Define paths to check
+By default, octo-linter will check all files in the repository. However, it is possible to define a list of paths to check. There are two keys that can be used to define 
+paths: `paths.no_checking` and `paths.checking`. With the first one, octo-linter will exclude all matching files from the check. With the second one, octo-linter will only check 
+matching files. Both keys can be used together, and `checking` takes precedence.
+See an example below.
+
+````yaml
+paths:
+  no_checking:
+    - .github/workflows/test*.yml
+  checking:
+    - .github/workflows/test-deploy-dev-v2.yml
+````
+
 ### Version compatibility
 The latest `v2` version of the application supports only configuration version `'3'`. Older configuration versions are no longer supported and would 
 require using the previous `v1` release of octo-linter.

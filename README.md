@@ -67,7 +67,7 @@ docker run --platform=linux/amd64 --rm --name octo-linter \
   -v $(pwd)/dot-github:/dot-github \
   -v $(pwd):/config \
   -v $(pwd)/output:/output \
-  mikolajgasior/octo-linter:v2.5.1 \
+  mikolajgasior/octo-linter:v2.6.0 \
   lint -p /dot-github -l WARN -c /config/config.yml -o /output -u 10
 ````
 
