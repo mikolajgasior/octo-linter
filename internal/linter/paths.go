@@ -8,6 +8,10 @@ type Paths struct {
 }
 
 func (p *Paths) Check(path string) bool {
+	if p == nil {
+		return true
+	}
+
 	if len(p.NoChecking) > 0 {
 		for _, pattern := range p.NoChecking {
 			match, _ := filepath.Match(pattern, path)
