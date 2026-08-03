@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
-	"time"
 
 	"octo-linter/internal/dotgithub"
 	"octo-linter/internal/linter/glitch"
@@ -26,9 +25,6 @@ const (
 )
 
 const (
-	// MillisecondsTickerCheckingChannelsClosed is the ticker interval (ms) for checking channel closure.
-	MillisecondsTickerCheckingChannelsClosed = 500
-
 	// FileModeOutputMarkdown sets the mode for the generated markdown summary file.
 	FileModeOutputMarkdown = 0o600
 )
@@ -52,150 +48,150 @@ func (l *Linter) Lint(dotGithub *dotgithub.DotGithub, output string, outputLimit
 	}
 
 	summary := newSummary()
-	numCPU := runtime.NumCPU()
 
 	chJobs := make(chan Job)
 	chWarnings := make(chan glitch.Glitch)
 	chErrors := make(chan glitch.Glitch)
 
-	waitGroup := sync.WaitGroup{}
-	waitGroup.Add(numCPU)
+	// Worker pool: one goroutine per CPU, at minimum one.
+	numWorkers := max(1, runtime.NumCPU()-1)
 
-	go func() {
-		for _, action := range dotGithub.Actions {
-			if l.Config != nil && l.Config.Paths != nil && !l.Config.Paths.Check(action.Path) {
-				slog.Info("skipping action due to 'paths' configuration", slog.String("path", action.Path))
-				continue
-			}
+	var workerWg sync.WaitGroup
 
-			for ruleIdx, ruleEntry := range l.Config.Rules {
-				if ruleEntry.FileType()&rule.DotGithubFileTypeAction == 0 {
-					continue
-				}
+	workerWg.Add(numWorkers)
 
-				isError := l.Config.IsError(ruleEntry.ConfigName(rule.DotGithubFileTypeAction))
-				chJobs <- Job{
-					rule:      ruleEntry,
-					file:      action,
-					dotGithub: dotGithub,
-					isError:   isError,
-					value:     l.Config.Values[ruleIdx],
-				}
-
-				summary.numJob.Add(1)
-			}
-		}
-
-		for _, workflow := range dotGithub.Workflows {
-			if l.Config != nil && l.Config.Paths != nil && !l.Config.Paths.Check(workflow.Path) {
-				slog.Info("skipping workflow due to 'paths' configuration", slog.String("path", workflow.Path))
-				continue
-			}
-
-			for ruleIdx, ruleEntry := range l.Config.Rules {
-				if ruleEntry.FileType()&rule.DotGithubFileTypeWorkflow == 0 {
-					continue
-				}
-
-				isError := l.Config.IsError(ruleEntry.ConfigName(rule.DotGithubFileTypeWorkflow))
-				chJobs <- Job{
-					rule:      ruleEntry,
-					file:      workflow,
-					dotGithub: dotGithub,
-					isError:   isError,
-					value:     l.Config.Values[ruleIdx],
-				}
-
-				summary.numJob.Add(1)
-			}
-		}
-
-		close(chJobs)
-		waitGroup.Done()
-	}()
-
-	go func() {
-		for {
-			job, more := <-chJobs
-			if !more {
-				close(chWarnings)
-				close(chErrors)
-
-				waitGroup.Done()
-
-				return
-			}
-
-			compliant, err := job.Run(chWarnings, chErrors)
-			if err != nil {
-				slog.Error(
-					"error running job",
-					slog.String("err", err.Error()),
-				)
-				summary.numError.Add(1)
-
-				continue
-			}
-
-			if !compliant {
-				if job.isError {
-					summary.numError.Add(1)
-				} else {
-					summary.numWarning.Add(1)
-				}
-			}
-
-			summary.numProcessed.Add(1)
-		}
-	}()
-
-	for range numCPU - 2 {
+	for range numWorkers {
 		go func() {
-			chWarningsClosed := false
-			chErrorsClosed := false
+			defer workerWg.Done()
 
-			ticker := time.NewTicker(MillisecondsTickerCheckingChannelsClosed * time.Millisecond)
+			for job := range chJobs {
+				compliant, err := job.Run(chWarnings, chErrors)
+				if err != nil {
+					slog.Error(
+						"error running job",
+						slog.String("err", err.Error()),
+					)
+					summary.numError.Add(1)
 
-			for {
-				select {
-				case glitchInstance, more := <-chWarnings:
-					if more {
-						slog.Warn(
-							glitchInstance.ErrText,
-							slog.String("path", glitchInstance.Path),
-							slog.String("rule", glitchInstance.RuleName),
-						)
+					continue
+				}
 
-						glitchInstance.IsError = false
-						summary.addGlitch(&glitchInstance)
+				if !compliant {
+					if job.isError {
+						summary.numError.Add(1)
 					} else {
-						chWarningsClosed = true
-					}
-				case glitchInstance, more := <-chErrors:
-					if more {
-						slog.Error(
-							glitchInstance.ErrText,
-							slog.String("path", glitchInstance.Path),
-							slog.String("rule", glitchInstance.RuleName),
-						)
-
-						glitchInstance.IsError = true
-						summary.addGlitch(&glitchInstance)
-					} else {
-						chErrorsClosed = true
-					}
-				case <-ticker.C:
-					if chWarningsClosed && chErrorsClosed {
-						waitGroup.Done()
-
-						return
+						summary.numWarning.Add(1)
 					}
 				}
+
+				summary.numProcessed.Add(1)
 			}
 		}()
 	}
 
-	waitGroup.Wait()
+	// Close result channels once all workers have finished sending findings.
+	go func() {
+		workerWg.Wait()
+		close(chWarnings)
+		close(chErrors)
+	}()
+
+	// Single consumer draining both result channels until both are closed.
+	var consumerWg sync.WaitGroup
+
+	consumerWg.Add(1)
+
+	go func() {
+		defer consumerWg.Done()
+
+		warnCh := chWarnings
+		errCh := chErrors
+
+		for warnCh != nil || errCh != nil {
+			select {
+			case glitchInstance, more := <-warnCh:
+				if more {
+					slog.Warn(
+						glitchInstance.ErrText,
+						slog.String("path", glitchInstance.Path),
+						slog.String("rule", glitchInstance.RuleName),
+					)
+
+					glitchInstance.IsError = false
+					summary.addGlitch(&glitchInstance)
+				} else {
+					warnCh = nil
+				}
+			case glitchInstance, more := <-errCh:
+				if more {
+					slog.Error(
+						glitchInstance.ErrText,
+						slog.String("path", glitchInstance.Path),
+						slog.String("rule", glitchInstance.RuleName),
+					)
+
+					glitchInstance.IsError = true
+					summary.addGlitch(&glitchInstance)
+				} else {
+					errCh = nil
+				}
+			}
+		}
+	}()
+
+	// Produce jobs in the current goroutine.
+	for _, action := range dotGithub.Actions {
+		if l.Config.Paths != nil && !l.Config.Paths.Check(action.Path) {
+			slog.Info("skipping action due to 'paths' configuration", slog.String("path", action.Path))
+
+			continue
+		}
+
+		for ruleIdx, ruleEntry := range l.Config.Rules {
+			if ruleEntry.FileType()&rule.DotGithubFileTypeAction == 0 {
+				continue
+			}
+
+			isError := l.Config.IsError(ruleEntry.ConfigName(rule.DotGithubFileTypeAction))
+			chJobs <- Job{
+				rule:      ruleEntry,
+				file:      action,
+				dotGithub: dotGithub,
+				isError:   isError,
+				value:     l.Config.Values[ruleIdx],
+			}
+
+			summary.numJob.Add(1)
+		}
+	}
+
+	for _, workflow := range dotGithub.Workflows {
+		if l.Config.Paths != nil && !l.Config.Paths.Check(workflow.Path) {
+			slog.Info("skipping workflow due to 'paths' configuration", slog.String("path", workflow.Path))
+
+			continue
+		}
+
+		for ruleIdx, ruleEntry := range l.Config.Rules {
+			if ruleEntry.FileType()&rule.DotGithubFileTypeWorkflow == 0 {
+				continue
+			}
+
+			isError := l.Config.IsError(ruleEntry.ConfigName(rule.DotGithubFileTypeWorkflow))
+			chJobs <- Job{
+				rule:      ruleEntry,
+				file:      workflow,
+				dotGithub: dotGithub,
+				isError:   isError,
+				value:     l.Config.Values[ruleIdx],
+			}
+
+			summary.numJob.Add(1)
+		}
+	}
+
+	close(chJobs)   // signal workers to stop
+	consumerWg.Wait() // wait for consumer to drain all findings
 
 	finalStatus := HasNoErrorsOrWarnings
 
