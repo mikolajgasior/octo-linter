@@ -29,6 +29,6 @@ var (
 
 var regexpRefs = map[string]*regexp.Regexp{
 	"env":     regexp.MustCompile("\\${{[ ]*env\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
-	"vars":    regexp.MustCompile("\\${{[ ]*env\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
-	"secrets": regexp.MustCompile("\\${{[ ]*env\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
+	"vars":    regexp.MustCompile("\\${{[ ]*vars\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
+	"secrets": regexp.MustCompile("\\${{[ ]*secrets\\.([a-zA-Z0-9\\-_]+)[ ]*}}"),
 }
