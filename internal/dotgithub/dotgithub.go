@@ -43,7 +43,7 @@ var (
 var (
 	filenameRegex        = regexp.MustCompile(`\.y[a]{0,1}ml$`)
 	regexpExternalAction = regexp.MustCompile(
-		`[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]){0,1}@[a-zA-Z0-9\.\-\_]+`,
+		`^[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]+){0,1}@[a-zA-Z0-9\.\-\_]+$`,
 	)
 )
 

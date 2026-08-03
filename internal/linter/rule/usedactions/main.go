@@ -43,7 +43,7 @@ var (
 		`^\.\/\.github\/actions\/([a-zA-Z0-9\-_]+|[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-_]+)$`,
 	)
 	regexpExternalAction = regexp.MustCompile(
-		`[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]){0,1}@[a-zA-Z0-9\.\-\_]+`,
+		`^[a-zA-Z0-9\-\_]+\/[a-zA-Z0-9\-\_]+(\/[a-zA-Z0-9\-\_]+){0,1}@[a-zA-Z0-9\.\-\_]+$`,
 	)
 )
 
