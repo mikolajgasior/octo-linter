@@ -32,6 +32,8 @@ const (
 	// NumExternalActionPathPartsNoSubdir defines the number of segments in a 'uses' path split by '/' when the action
 	// is not in a subdirectory.
 	NumExternalActionPathPartsNoSubdir = 2
+	// MaxExternalActionBodyBytes is the maximum number of bytes read from an external action response body.
+	MaxExternalActionBodyBytes = 1 << 20 // 1 MiB
 )
 
 var (
@@ -194,7 +196,16 @@ func (d *DotGithub) DownloadExternalAction(ctx context.Context, path string, ove
 		}
 	}()
 
-	b, _ := io.ReadAll(resp.Body)
+	lr := &io.LimitedReader{R: resp.Body, N: MaxExternalActionBodyBytes}
+
+	b, err := io.ReadAll(lr)
+	if err != nil {
+		return fmt.Errorf("error reading action body for %s: %w", path, err)
+	}
+
+	if lr.N == 0 {
+		return fmt.Errorf("action body for %s exceeds maximum size of %d bytes", path, MaxExternalActionBodyBytes)
+	}
 
 	actionInstance := &action.Action{
 		Path:    path,
