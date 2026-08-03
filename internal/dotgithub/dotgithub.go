@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"octo-linter/internal/action"
 	"octo-linter/internal/workflow"
@@ -34,6 +35,8 @@ const (
 	NumExternalActionPathPartsNoSubdir = 2
 	// MaxExternalActionBodyBytes is the maximum number of bytes read from an external action response body.
 	MaxExternalActionBodyBytes = 1 << 20 // 1 MiB
+	// ExternalActionHTTPTimeout is the timeout for each HTTP request when downloading an external action.
+	ExternalActionHTTPTimeout = 30 * time.Second
 )
 
 var (
@@ -455,7 +458,7 @@ func (d *DotGithub) getActionHTTPResponse(
 		return nil, errCreatingHTTPRequestForAction(err)
 	}
 
-	httpClient := &http.Client{}
+	httpClient := &http.Client{Timeout: ExternalActionHTTPTimeout}
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
